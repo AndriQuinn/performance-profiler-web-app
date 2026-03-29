@@ -3,6 +3,7 @@ import { Container, Button , Dropdown, Form } from "react-bootstrap";
 import Header from '../components/Header';
 import { Link } from "react-router-dom";
 import { useState } from 'react';
+import Header2 from '../components/Header2';
 
 const RunBenchamark = () => {
     return (
@@ -54,14 +55,13 @@ const ExecuteBenchmarkSection = () => {
     return (<>
         <Container fluid className='border-gray p-4 my-4'>
             <div className='d-flex flex-column justify-content-start'>
-                <div className=' mb-3 d-flex flex-column flex-md-row d-flex align-items-center justify-content-start text-center'> 
-                    <div className=' rounded d-flex align-items-center justify-content-center' >
-                        <img src="/thunder.svg" alt="" height={25}/>
-                    </div>
-                    <h5 className='mx-2 mb-0'> Execute Performance Benchmark </h5>
-                </div>
+                <Header2 
+                    headerText={"Execute Performance Benchmark"}
+                    imagePath={"/thunder.svg"}
+                    size={25}
+                />      
                 <div>
-                    <p className='second-font-color ps-4'> Run comprehensive tests to measure search, insert, and delete operations </p>
+                    <p className='my-2 second-font-color'> Run comprehensive tests to measure search, insert, and delete operations </p>
                 </div>
             </div>
             <StartBenchmarkSection/>
@@ -73,7 +73,7 @@ const ExecuteBenchmarkSection = () => {
 
 const StartBenchmarkSection = () => {
     return (<>
-        <div className='d-flex flex-column flex-lg-row justify-content-between align-items-center p-3 p-md-4 my-3 border-gray'> 
+        <div className='d-flex flex-column flex-lg-row justify-content-between align-items-center my-4 p-4 border-gray'> 
             <div className='d-flex justify-content-start align-items-center'>
                 <img src='/database.svg' className='me-3' height={35} />
                 <div className='d-flex flex-column justify-content-start'>
@@ -82,12 +82,14 @@ const StartBenchmarkSection = () => {
                     <p className='my-0 second-font-color'> Total Records </p> 
                 </div>
             </div>
-            <div className='d-flex flex-row align-items-center justify-content-center my-3 my-lg-0'>
-                <Button as={Link} to="/viewResults" className='d-flex flex-row justify-content-center align-items-center p-2 black-button' >
+
+            <div className='d-flex flex-row align-items-center justify-content-center mt-3 my-lg-0'>
+                <Button as={Link} to="/viewResults" className='d-flex flex-row justify-content-center align-items-center p-2 black-button my-0' >
                     <img src='/play-button.svg' className='me-2 ' height={15}/>
                     Start Benchmark
                 </Button>
             </div>
+
         </div>
     </>)
 }
@@ -98,12 +100,12 @@ const ImplmentationSection = () => {
 
     return (<>
         <div className='d-flex flex-column justify-content-start p-3 p-md-4 my-3 border-gray'> 
-            <div className=' mb-3 d-flex flex-column flex-md-row d-flex align-items-center justify-content-start text-center'> 
-                    <div className=' rounded d-flex align-items-center justify-content-center' >
-                        <img src="information-muted.svg" alt="" height={20}/>
-                    </div>
-                    <h5 className='mx-2 my-0 mb-0'> Implementation Section </h5>
-            </div>
+            <Header2 
+                headerText={"Implementation Section"}
+                imagePath={"information-muted.svg"}
+                size={25}
+            />      
+            
             <div className='my-1 d-flex flex-column' >
                 <p className='second-font-color'> Implementation</p>
                 <Dropdown className='my-0 w-100 gray-bg-2'>
@@ -117,11 +119,13 @@ const ImplmentationSection = () => {
                     </Dropdown.Menu>
                 </Dropdown>
             </div>
-            <div className='my-3'>
+
+            <div className='mt-3'>
                 <div className='d-flex flex-row justify-content-start'>
                     <img src='search.svg' className='me-3' height={20} />
                     <h6> Search </h6>
                 </div>
+                
                 <Form className='my-0'>
                     <Form.Group  >
                     <Form.Label className='dark-secondary-h'>Number of Search Operations</Form.Label>
@@ -135,6 +139,7 @@ const ImplmentationSection = () => {
                         />
                     </Form.Group>
                 </Form>
+
                 <p className='second-font-color my-0 '> Max: 1,000,000 </p>
             </div>    
         </div>
@@ -143,7 +148,7 @@ const ImplmentationSection = () => {
 
 const BenchmarkInformationSection = () => {
     return (<>
-        <div className='d-flex flex-column  justify-content-start p-3 p-md-4 my-3 yellow-bg'> 
+        <div className='d-flex flex-column  justify-content-start my-4 p-4 yellow-bg'> 
             <div className=' mb-3 d-flex flex-column flex-md-row d-flex align-items-center justify-content-start text-center'> 
                 <div className=' rounded d-flex align-items-center justify-content-center' >
                     <img src="/information-brown.svg" alt="" height={20}/>

@@ -1,7 +1,8 @@
 import '../App.css'
-import { Container, Row, Col, Button } from "react-bootstrap";
+import { Container, Button } from "react-bootstrap";
 import Header from '../components/Header';
 import { Link } from "react-router-dom";
+import Header2 from '../components/Header2';
 
 const Home = () => {
     return (
@@ -50,15 +51,14 @@ const Pages = () => {
 
 const InstructionSection = () => {
     return (<>
-        <Container fluid className='border-blue blue-bg p-4 p-lg-5 my-4'>
+        <Container fluid className='border-blue blue-bg p-4 my-4'>
             <div className='d-flex flex-column justify-content-start '>
-                <div className=' mb-3 d-flex flex-column flex-md-row d-flex align-items-center justify-content-start text-center'> 
-                    <div className=' rounded d-flex align-items-center justify-content-center' >
-                        <img src="information.svg" alt="" height={25}/>
-                    </div>
-                    <h5 className='mx-2 mb-0'> Dataset Instruction </h5>
-                </div>
-                <p>This system evaluates the performance of search algorithms using an e-commerce dataset. </p>
+                <Header2 
+                    headerText={"Dataset Instruction"}
+                    imagePath={"information.svg"}
+                    size={25}
+                />
+                <p className='my-2'>This system evaluates the performance of search algorithms using an e-commerce dataset. </p>
                 <p>You can either: </p>
                 <ul>
                     <li> Upload your own dataset (CSV or JSON) </li>
@@ -82,16 +82,17 @@ const ImportDatasetSection = () => {
         <>
             <Container fluid className='border-gray my-4 p-4'>
                 <div className='d-flex flex-column justify-content-start '>
-                    <div className="d-flex flex-row justify-content-start align-items-center">
-                        <img src="database-gray.svg" style={{height: 25}} className='pe-3'/>
-                        <h5 className='my-0'> Import E-commerce Dataset </h5>
-                    </div>
+                    <Header2 
+                        headerText={"Import E-commerce Dataset"}
+                        imagePath={"database-gray.svg"}
+                        size={25}
+                    />
                     <div>
                         <p className='my-2 second-font-color'> Upload your dataset file (JSON or CSV format) or generate sample data </p>
                     </div>
                 </div>
                 <Button className='button-max gray-bg-2 gray-border-2 d-flex flex-column justify-content-center align-items-center p-5 my-3'>
-                    <img src='https://cdn-icons-png.flaticon.com/128/3097/3097412.png' style={{height: 30}} alt=''/>
+                    <img src='/upload.svg' style={{height: 30}} alt=''/>
                     <p> <b> Click to upload or drag and drop </b> </p>
                     <p className='second-font-color'> Supports JSON and CSV files </p>
                 </Button>   
@@ -105,36 +106,37 @@ const SampleDataSection = () => {
         <>
             <Container fluid className='border-gray my-4 p-4'>
                 <div className='d-flex flex-column justify-content-start '>
-                    <div className="d-flex flex-row justify-content-start align-items-center">
-                        <img src="/table-gray.svg" style={{height: 25}} className='pe-3'/>
-                        <h5 className='my-0'> Generate Sample Dataset </h5>
-                    </div>
+                    <Header2 
+                        headerText={"Generate Sample Dataset"}
+                        imagePath={"/table-gray.svg"}
+                        size={25}
+                    />      
                     <div>
                         <p className='my-2 second-font-color'> Quickly generate synthetic e-commerce data for testing </p>
                     </div>
                     <div  className='d-flex flex-column flex-lg-row justify-content-between align-items-center my-3'>
                         <Button to="/runBenchmark" as={Link} className='border-gray d-flex justify-content-center button-default'>
                             <div className='py-3 d-flex flex-column justify-content-center align-items-center px-5'>
-                                <h4>1K </h4>
-                                <p className='second-font-color'> Records </p>
+                                <h4 className='mb-2'>1K </h4>
+                                <p className='my-0 second-font-color'> Records </p>
                             </div>
                         </Button>
                         <Button to="/runBenchmark" as={Link} className='d-flex justify-content-center button-default'>
                             <div className='py-3 d-flex flex-column justify-content-center align-items-center px-5'>
-                                <h4>10K </h4>
-                                <p className='second-font-color'> Records </p>
+                                <h4 className='mb-2'>10K </h4>
+                                <p className='my-0 second-font-color'> Records </p>
                             </div>
                         </Button>
                         <Button to="/runBenchmark" as={Link} className='d-flex justify-content-center button-default'>
                             <div className='py-3 d-flex flex-column justify-content-center align-items-center px-5'>
-                                <h4>100K </h4>
-                                <p className='second-font-color'> Records </p>
+                                <h4 className='mb-2'>100K </h4>
+                                <p className='my-0 second-font-color'> Records </p>
                             </div>
                         </Button>
                         <Button to="/runBenchmark" as={Link} className='d-flex justify-content-center button-default'>
                             <div className='py-3 d-flex flex-column justify-content-center align-items-center px-5'>
-                                <h4>1M </h4>
-                                <p className='second-font-color'> Records </p>
+                                <h4 className='mb-2'>1M </h4>
+                                <p className='my-0 second-font-color'> Records </p>
                             </div>
                         </Button>
                     </div>
