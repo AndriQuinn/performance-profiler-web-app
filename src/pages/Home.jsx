@@ -1,10 +1,18 @@
 import '../App.css'
-import { Container, Button } from "react-bootstrap";
+import { Container, Button, Spinner } from "react-bootstrap";
 import Header from '../components/Header';
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Header2 from '../components/Header2';
+import { useState } from "react";
 
-const Home = () => {
+
+const Home = ({
+    generateData
+    }
+) => {
+
+    const navigate = useNavigate(); 
+
     return (
         <>
             <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center gray-bg p-1 p-md-2 p-lg-3 p-xl-5">
@@ -13,7 +21,10 @@ const Home = () => {
                     <Pages/>
                     <InstructionSection/>
                     <ImportDatasetSection/>
-                    <SampleDataSection/>
+                    <SampleDataSection 
+                        navigate={navigate}
+                        generateData={generateData}
+                    />
                 </Container>
             </Container>    
             
@@ -101,7 +112,21 @@ const ImportDatasetSection = () => {
     )
 }
 
-const SampleDataSection = () => {
+const SampleDataSection = ( {
+    navigate,
+    generateData,
+}
+) => {
+
+    const [loading, setLoading] = useState(false);
+
+    const handleGenerateDate = (size) => {
+        setLoading(true)
+        generateData(size)
+        setLoading(false)
+        navigate("/runBenchmark")
+    }
+
     return (
         <>
             <Container fluid className='border-gray my-4 p-4'>
@@ -115,29 +140,65 @@ const SampleDataSection = () => {
                         <p className='my-2 second-font-color'> Quickly generate synthetic e-commerce data for testing </p>
                     </div>
                     <div  className='d-flex flex-column flex-lg-row justify-content-between align-items-center my-3'>
-                        <Button to="/runBenchmark" as={Link} className='border-gray d-flex justify-content-center button-default'>
-                            <div className='py-3 d-flex flex-column justify-content-center align-items-center px-5'>
-                                <h4 className='mb-2'>1K </h4>
-                                <p className='my-0 second-font-color'> Records </p>
-                            </div>
+                        <Button className='border-gray d-flex justify-content-center button-default' onClick={() => handleGenerateDate(1e3)}>
+                            {loading ? (<Spinner
+                                as="span"
+                                animation="border"
+                                size="sm"
+                                role="status"
+                                aria-hidden="true"
+                            />)
+                             : (
+                                <div className='py-3 d-flex flex-column justify-content-center align-items-center px-5'>
+                                    <h4 className='mb-2'>1k </h4>
+                                    <p className='my-0 second-font-color'> Records </p>
+                                </div>    
+                             )}
                         </Button>
-                        <Button to="/runBenchmark" as={Link} className='d-flex justify-content-center button-default'>
-                            <div className='py-3 d-flex flex-column justify-content-center align-items-center px-5'>
-                                <h4 className='mb-2'>10K </h4>
-                                <p className='my-0 second-font-color'> Records </p>
-                            </div>
+                        <Button className='d-flex justify-content-center button-default' onClick={() => handleGenerateDate(1e4)}>
+                            {loading ? (<Spinner
+                                as="span"
+                                animation="border"
+                                size="sm"
+                                role="status"
+                                aria-hidden="true"
+                            />)
+                             : (
+                                <div className='py-3 d-flex flex-column justify-content-center align-items-center px-5'>
+                                    <h4 className='mb-2'> 10k </h4>
+                                    <p className='my-0 second-font-color'> Records </p>
+                                </div>    
+                             )}
                         </Button>
-                        <Button to="/runBenchmark" as={Link} className='d-flex justify-content-center button-default'>
-                            <div className='py-3 d-flex flex-column justify-content-center align-items-center px-5'>
-                                <h4 className='mb-2'>100K </h4>
-                                <p className='my-0 second-font-color'> Records </p>
-                            </div>
+                        <Button className='d-flex justify-content-center button-default' onClick={() => handleGenerateDate(1e5)}>
+                            {loading ? (<Spinner
+                                as="span"
+                                animation="border"
+                                size="sm"
+                                role="status"
+                                aria-hidden="true"
+                            />)
+                             : (
+                                <div className='py-3 d-flex flex-column justify-content-center align-items-center px-5'>
+                                    <h4 className='mb-2'>100k </h4>
+                                    <p className='my-0 second-font-color'> Records </p>
+                                </div>    
+                             )}
                         </Button>
-                        <Button to="/runBenchmark" as={Link} className='d-flex justify-content-center button-default'>
-                            <div className='py-3 d-flex flex-column justify-content-center align-items-center px-5'>
-                                <h4 className='mb-2'>1M </h4>
-                                <p className='my-0 second-font-color'> Records </p>
-                            </div>
+                        <Button className='d-flex justify-content-center button-default' onClick={() => handleGenerateDate(1e6)}>
+                             {loading ? (<Spinner
+                                as="span"
+                                animation="border"
+                                size="sm"
+                                role="status"
+                                aria-hidden="true"
+                            />)
+                             : (
+                                <div className='py-3 d-flex flex-column justify-content-center align-items-center px-5'>
+                                    <h4 className='mb-2'>1M </h4>
+                                    <p className='my-0 second-font-color'> Records </p>
+                                </div>    
+                             )}
                         </Button>
                     </div>
                 </div>
