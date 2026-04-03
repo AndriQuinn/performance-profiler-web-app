@@ -56,10 +56,20 @@ export function binarySearch(arr, target, left = 0, right = arr.length - 1) {
 export function interpolationBinarySearch(arr, target) {
   let low = 0;
   let high = arr.length - 1;
+  let consecutiveBadProbes = 0;
+  const BAD_PROBE_THRESHOLD = 3;
 
   while (low <= high && target >= arr[low] && target <= arr[high]) {
-    // If values are too close or uniformity is low, fallback to binary search
-    if (arr[high] === arr[low]) break;
+    if (arr[high] === arr[low]) {
+      return arr[low] === target ? low : -1;
+    }
+
+    const mid = Math.floor((low + high) / 2);
+
+    // True fallback: switch to binary search if interpolation is probing poorly
+    if (consecutiveBadProbes >= BAD_PROBE_THRESHOLD) {
+      return binarySearch(arr, target, low, high);
+    }
 
     // Estimate position using interpolation
     const pos =
@@ -68,14 +78,20 @@ export function interpolationBinarySearch(arr, target) {
         ((high - low) * (target - arr[low])) / (arr[high] - arr[low])
       );
 
-    // If interpolation gives a valid index
     if (arr[pos] === target) return pos;
+
+    // Track if interpolation is probing far from the midpoint (skewed data)
+    if (Math.abs(pos - mid) > (high - low) * 0.5) {
+      consecutiveBadProbes++;
+    } else {
+      consecutiveBadProbes = 0; // reset if probe looks healthy
+    }
 
     if (arr[pos] < target) low = pos + 1;
     else high = pos - 1;
   }
 
-  // Fallback to binary search for remaining range
+  // Fallback for when target is out of bounds or range is exhausted
   return binarySearch(arr, target, low, high);
 }
 
@@ -140,10 +156,22 @@ export function fibonacciSearch(arr, target) {
 export function interpolationFibonacciSearch(arr, target) {
   let low = 0;
   let high = arr.length - 1;
+  let consecutiveBadProbes = 0;
+  const BAD_PROBE_THRESHOLD = 3;
 
   while (low <= high && target >= arr[low] && target <= arr[high]) {
-    // Fallback to Fibonacci if interpolation is unreliable
-    if (arr[high] === arr[low]) break;
+    if (arr[high] === arr[low]) {
+      return arr[low] === target ? low : -1;
+    }
+
+    const mid = Math.floor((low + high) / 2);
+
+    // True fallback: switch to Fibonacci if interpolation is probing poorly
+    if (consecutiveBadProbes >= BAD_PROBE_THRESHOLD) {
+      const slice = arr.slice(low, high + 1);
+      const result = fibonacciSearch(slice, target);
+      return result !== -1 ? low + result : -1;
+    }
 
     // Estimate position using interpolation
     const pos =
@@ -154,14 +182,21 @@ export function interpolationFibonacciSearch(arr, target) {
 
     if (arr[pos] === target) return pos;
 
+    // Track if interpolation is probing far from midpoint (skewed data)
+    if (Math.abs(pos - mid) > (high - low) * 0.5) {
+      consecutiveBadProbes++;
+    } else {
+      consecutiveBadProbes = 0; // reset if probe looks healthy
+    }
+
     if (arr[pos] < target) low = pos + 1;
     else high = pos - 1;
   }
 
-  // Use Fibonacci search on the remaining range
-  return fibonacciSearch(arr.slice(low, high + 1)) !== -1
-    ? low + fibonacciSearch(arr.slice(low, high + 1), target)
-    : -1;
+  // Fallback for when target is out of bounds or range is exhausted
+  const slice = arr.slice(low, high + 1);
+  const result = fibonacciSearch(slice, target);
+  return result !== -1 ? low + result : -1;
 }
 
 
@@ -189,7 +224,6 @@ export function exponentialSearch(arr, target) {
   const right = Math.min(bound, n - 1);
   return binarySearch(arr, target, left, right);
 }
-
 /**
  * Interpolation-Exponential Hybrid Search
  * @param {number[]} arr - sorted array
@@ -199,10 +233,22 @@ export function exponentialSearch(arr, target) {
 export function interpolationExponentialSearch(arr, target) {
   let low = 0;
   let high = arr.length - 1;
+  let consecutiveBadProbes = 0;
+  const BAD_PROBE_THRESHOLD = 3;
 
   while (low <= high && target >= arr[low] && target <= arr[high]) {
-    // Interpolation becomes unreliable if all values in range are the same
-    if (arr[high] === arr[low]) break;
+    if (arr[high] === arr[low]) {
+      return arr[low] === target ? low : -1;
+    }
+
+    const mid = Math.floor((low + high) / 2);
+
+    // True fallback: switch to exponential search if interpolation is probing poorly
+    if (consecutiveBadProbes >= BAD_PROBE_THRESHOLD) {
+      const slice = arr.slice(low, high + 1);
+      const result = exponentialSearch(slice, target);
+      return result !== -1 ? low + result : -1;
+    }
 
     // Interpolation estimate
     const pos =
@@ -212,12 +258,20 @@ export function interpolationExponentialSearch(arr, target) {
       );
 
     if (arr[pos] === target) return pos;
+
+    // Track if interpolation is probing far from midpoint (skewed data)
+    if (Math.abs(pos - mid) > (high - low) * 0.5) {
+      consecutiveBadProbes++;
+    } else {
+      consecutiveBadProbes = 0; // reset if probe looks healthy
+    }
+
     if (arr[pos] < target) low = pos + 1;
     else high = pos - 1;
   }
 
-  // Fallback to exponential search on the remaining range
-  const slicedArr = arr.slice(low, high + 1);
-  const expIndex = exponentialSearch(slicedArr, target);
-  return expIndex !== -1 ? low + expIndex : -1;
+  // Fallback for when target is out of bounds or range is exhausted
+  const slice = arr.slice(low, high + 1);
+  const result = exponentialSearch(slice, target);
+  return result !== -1 ? low + result : -1;
 }
