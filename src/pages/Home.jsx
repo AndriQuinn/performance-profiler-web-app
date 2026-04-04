@@ -6,7 +6,9 @@ import Header2 from '../components/Header2';
 import { useState } from "react";
 
 
-const Home = () => {
+const Home = ({
+    generateData
+}) => {
 
     const navigate = useNavigate(); 
 
@@ -18,7 +20,7 @@ const Home = () => {
                     <Pages/>
                     <InstructionSection/>
                     <ImportDatasetSection/>
-                    <SampleDataSection navigate={navigate}/>
+                    <SampleDataSection navigate={navigate} generateData={generateData}/>
                 </Container>
             </Container>    
             
@@ -107,13 +109,14 @@ const ImportDatasetSection = () => {
 }
 
 const SampleDataSection = ( {
+    generateData,
     navigate,
 } ) => {
 
     const [loading, setLoading] = useState(false);
 
     const handleGenerateDate = (size) => {
-        sessionStorage.setItem("size", size);
+        generateData(size)
         navigate("/runBenchmark")
     }
 

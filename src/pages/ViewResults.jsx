@@ -8,13 +8,36 @@ import Graph from '../components/Graph';
 
 
 const ViewResults = () => {
+
+    const data = JSON.parse(sessionStorage.getItem('downSampling')) 
+    console.log(JSON.parse(sessionStorage.getItem('downSampling')) )
+    const x = []
+    for (var i = 0; i < 50; i++) {
+        x.push(i+1)
+    }
+    
+    const uniformPoints = [
+        x,
+        data.uniform.interpolation,
+        data.uniform.hybridSearch
+    ]
+
+    const nonUniformPoints = [
+        x,
+        data.nonUniform.interpolation,
+        data.nonUniform.hybridSearch
+    ]
+
     return (
         <>
             <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center gray-bg p-1 p-md-2 p-lg-3 p-xl-5">
                 <Header/>
                 <Container fluid className="white-bg p-4 p-md-5 my-3 ">
                     <Pages/>
-                    <Body/>
+                    <Body 
+                        uniformPoints={uniformPoints}
+                        nonUniformPoints={nonUniformPoints}
+                    />
                 </Container>
             </Container>    
             
@@ -50,7 +73,10 @@ const Pages = () => {
     )
 }
 
-const Body = () => {
+const Body = ({
+    uniformPoints,
+    nonUniformPoints
+}) => {
     return (<>
         <Container fluid className=' my-5'>
             <div className='d-flex flex-row justify-content-start'>
@@ -65,7 +91,10 @@ const Body = () => {
             <MetricsPanel/>
             <ImplementationUsed/>
             <BenchmarkAnalysis/>
-            <GraphPanels/>
+            <GraphPanels 
+                uniformPoints={uniformPoints}
+                nonUniformPoints={nonUniformPoints}
+            />
             <SubmitResultSection/>
 
         </Container>
@@ -114,7 +143,7 @@ const ImplementationUsed = () => {
     return (<>
         <Container fluid  className='w-100 px-0'>
             <div className='border-blue blue-bg px-3 py-2 my-4'>
-                <p className='m-0' style={{color: "blue"}}> <b> Implementation Used: </b> Interpolation-Binary Search </p>
+                <p className='m-0' style={{color: "blue"}}> <b> Implementation Used: </b> {sessionStorage.getItem("selectedAlgo")} </p>
             </div>
         </Container>
     </>)
@@ -124,10 +153,6 @@ const BenchmarkAnalysis = () => {
     return (<>
         <Container fluid  className='px-0'>
             <div className='p-4 border-gray'>
-                {/* <div className='d-flex flex-row justify-content-start align-items-center '>
-                    <img src='/pie-chart.svg' height={20} alt='' className='me-2'/>   
-                    <h5 className='my-0'> Benchmark Result Analysis </h5>
-                </div> */}
                 <Header2
                     headerText={"Benchmark Result Analysis"}
                     imagePath={"/pie-chart.svg"}
@@ -144,48 +169,39 @@ const BenchmarkAnalysis = () => {
     </>)
 }
 
-const GraphPanels = () => {    
-
-    const x = [1, 2, 3, 4, 5];
-    const y = [10, 15, 8, 20, 18];
+const GraphPanels = ({
+    uniformPoints,
+    nonUniformPoints
+}) => {    
 
     return (<>
         <Container fluid className='my-3'>
             <Row className='d-flex justify-content-between'>
                 <Col sm={12} className='my-2 p-4 border-gray '>
                     <Header2
-                        headerText={"Execution Time Comparison"}
+                        headerText={"Execution Time Comparison (Uniform)"}
                         imagePath={"/chart.svg"}
                         size={20}
                     />
                     <p className='my-2 second-font-color'> Time taken for each operation in nanoseconds </p>
-                    <Graph 
-                        x={x}
-                        y={y}
-                    />
+                    <Graph data={uniformPoints}/>
                 </Col>
 
                 <Col sm={12} className='my-2 p-4 border-gray '>
                     <Header2
-                        headerText={"Memory Usage Comparison"}
+                        headerText={"Execution Time Comparison (Non - Uniform)"}
                         imagePath={"/chart.svg"}
                         size={20}
                     />
-                    <p className='my-2 second-font-color'> Memory consumption during operations in MB </p>
-                    <Graph 
-                        x={x}
-                        y={y}
-                    />
+                    <p className='my-2 second-font-color'> Time taken for each operation in nanoseconds </p>
+                    <Graph data={nonUniformPoints}/>
                 </Col>
             </Row>
             <Row>
                 <Col sm={12} className='my-2 p-4 border-gray w-100'>
                     <h5 > Detailed Performance Metrics </h5>
                     <p > Comprehensive breakdown of all benchmark results </p>
-                    <Graph 
-                        x={x}
-                        y={y}
-                    />
+                    <Graph data={uniformPoints}/>
                 </Col>
             </Row>
         </Container>

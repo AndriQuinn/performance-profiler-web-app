@@ -1,0 +1,65 @@
+import { interpolationSearch } from "./search-algo"
+import { getRandomInt } from "./getRandomInt"
+
+export const performBenchmark = (attempts,hybridSearch,results, downSamplingPlots) => {
+
+    var counter = [1,1] // Multiplier
+    var plotPoints = Math.floor(attempts / 50)
+    var totalUni = [0,0] // Gets avereagen for each plot points 0 - interpolation, 1 - inter-bin , 1 - inter-fibo , 1 - inter-exp
+    var totalNonUni = [0,0] // Gets avereagen for each plot points 0 - interpolation, 1 - inter-bin , 1 - inter-fibo , 1 - inter-exp
+
+    const generatedData = JSON.parse(sessionStorage.getItem('generatedData'));
+    downSamplingPlots.uniform.interpolation = []
+    downSamplingPlots.uniform.hybridSearch = []
+    downSamplingPlots.nonUniform.interpolation = []
+    downSamplingPlots.nonUniform.hybridSearch = []
+    
+    for (var i = 0; i <= attempts; i++) {
+      var start = performance.now() // Start Time
+      var end = performance.now() // End Time
+
+      // Baseline
+      start = performance.now()
+      interpolationSearch(generatedData.uniformArr,getRandomInt(0,generatedData.uniformArr.length))
+      end = performance.now()
+      results.uniform.interpolation.executionTime.push(end - start)
+      totalUni[0] += (end - start)
+
+      start = performance.now()
+      interpolationSearch(generatedData.nonUniformArr,getRandomInt(0,generatedData.nonUniformArr.length))
+      end = performance.now()
+      results.nonUniform.interpolation.executionTime.push(end - start)
+      totalNonUni[0] += (end-start)
+
+      if (i >= plotPoints * counter[0]) {
+        downSamplingPlots.uniform.interpolation.push(totalUni[0] / plotPoints)
+        downSamplingPlots.nonUniform.interpolation.push(totalNonUni[0] / plotPoints)
+        counter[0] += 1
+        totalUni[0] = 0
+        totalNonUni[0] = 0
+      }
+      
+      // Hybrid Algo
+      start = performance.now()
+      hybridSearch(generatedData.uniformArr,getRandomInt(0,generatedData.uniformArr.length))
+      end = performance.now()
+      results.uniform.hybridSearch.executionTime.push(end - start)
+      totalUni[1] += (end - start)
+
+      start = performance.now()
+      hybridSearch(generatedData.nonUniformArr,getRandomInt(0,generatedData.nonUniformArr.length))
+      end = performance.now()
+      results.nonUniform.hybridSearch.executionTime.push(end - start)
+      totalNonUni[1] += (end - start)
+
+      if (i >= plotPoints * counter[1] ) {
+        downSamplingPlots.uniform.hybridSearch.push(totalUni[1] / plotPoints)
+        downSamplingPlots.nonUniform.hybridSearch.push(totalNonUni[1] / plotPoints)
+        counter[1] += 1
+        totalUni[1] = 0
+        totalNonUni[1] = 0
+      }
+    } 
+    sessionStorage.setItem("downSampling", JSON.stringify(downSamplingPlots))
+    console.log(downSamplingPlots)
+}

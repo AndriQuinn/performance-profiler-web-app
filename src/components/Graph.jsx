@@ -3,16 +3,14 @@ import { useRef, useEffect } from 'react';
 import uPlot from "uplot";
 import "uplot/dist/uPlot.min.css";
 
-export default function Graph(
-    {
-        x,
-        y
-    }
-) {
+export default function Graph( {
+    data
+    // x,
+    // y
+} ) {
     const chartRef = useRef(null);  
     const chartInstance = useRef(null);  
     
-    const data = [x, y];
     
     useEffect(() => {
         if (chartRef.current && !chartInstance.current) {
@@ -22,11 +20,15 @@ export default function Graph(
                 series: [
                 {},
                 {
-                    label: "Value",
-                    stroke: "blue",
-                    width: 1,
-                    points: { show: true, size: 3, stroke: "blue", fill: "white" },
+                    label: "Interpolation",
+                    stroke: "red",
+                    width: 2,
                 },
+                {
+                    label: sessionStorage.getItem("selectedAlgo"),
+                    stroke: "blue",
+                    width: 2,
+                }
                 ],
                 axes: [{
                     show: true,      // keep axis line if you want
