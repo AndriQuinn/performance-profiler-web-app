@@ -54,6 +54,10 @@ export function binarySearch(arr, target, left = 0, right = arr.length - 1) {
  * @returns {number} index of target, or -1 if not found
  */
 export function interpolationBinarySearch(arr, target) {
+  // Edge case handling
+  if (!arr || arr.length === 0) return -1;
+  if (arr.length === 1) return arr[0] === target ? 0 : -1;
+
   let low = 0;
   let high = arr.length - 1;
   let consecutiveBadProbes = 0;
@@ -66,33 +70,32 @@ export function interpolationBinarySearch(arr, target) {
 
     const mid = Math.floor((low + high) / 2);
 
-    // True fallback: switch to binary search if interpolation is probing poorly
     if (consecutiveBadProbes >= BAD_PROBE_THRESHOLD) {
-      return binarySearch(arr, target, low, high);
+      return binarySearch(arr, target, low, high); // ✅ no slice, pass bounds directly
     }
 
-    // Estimate position using interpolation
     const pos =
       low +
       Math.floor(
         ((high - low) * (target - arr[low])) / (arr[high] - arr[low])
       );
 
+    // Edge case: pos out of bounds
+    if (pos < low || pos > high) return -1;
+
     if (arr[pos] === target) return pos;
 
-    // Track if interpolation is probing far from the midpoint (skewed data)
     if (Math.abs(pos - mid) > (high - low) * 0.5) {
       consecutiveBadProbes++;
     } else {
-      consecutiveBadProbes = 0; // reset if probe looks healthy
+      consecutiveBadProbes = 0;
     }
 
     if (arr[pos] < target) low = pos + 1;
     else high = pos - 1;
   }
 
-  // Fallback for when target is out of bounds or range is exhausted
-  return binarySearch(arr, target, low, high);
+  return binarySearch(arr, target, low, high); // ✅ no slice
 }
 
 /**
@@ -101,50 +104,42 @@ export function interpolationBinarySearch(arr, target) {
  * @param {number} target - value to search
  * @returns {number} index of target, or -1 if not found
  */
-export function fibonacciSearch(arr, target) {
-  const n = arr.length;
+export function fibonacciSearch(arr, target, start = 0, end = arr.length - 1) {
+  const n = end - start + 1;
+  let fibMMm2 = 0;
+  let fibMMm1 = 1;
+  let fibM = fibMMm2 + fibMMm1;
 
-  // Initialize fibonacci numbers
-  let fibMMm2 = 0; // (m-2)'th Fibonacci No.
-  let fibMMm1 = 1; // (m-1)'th Fibonacci No.
-  let fibM = fibMMm2 + fibMMm1; // m'th Fibonacci
-
-  // Find the smallest fibonacci number >= n
   while (fibM < n) {
     fibMMm2 = fibMMm1;
     fibMMm1 = fibM;
     fibM = fibMMm2 + fibMMm1;
   }
 
-  // Marks the eliminated range from front
-  let offset = -1;
+  let offset = start - 1;
 
   while (fibM > 1) {
-    // Check if fibMMm2 is a valid location
-    const i = Math.min(offset + fibMMm2, n - 1);
+    const i = Math.min(offset + fibMMm2, end);
 
     if (arr[i] < target) {
-      // Move three fibonacci variables down
       fibM = fibMMm1;
       fibMMm1 = fibMMm2;
       fibMMm2 = fibM - fibMMm1;
       offset = i;
     } else if (arr[i] > target) {
-      // Move fibonacci numbers down by two
       fibM = fibMMm2;
-      fibMMm1 = fibMMm1 - fibMMm2;
-      fibMMm2 = fibM - fibMMm1;
+      fibMMm2 = fibMMm1 - fibMMm2;
+      fibMMm1 = fibM - fibMMm2;
     } else {
-      return i; // Found target
+      return i;
     }
   }
 
-  // Compare the last element
-  if (fibMMm1 && arr[offset + 1] === target) {
+  if (fibMMm1 && offset + 1 <= end && arr[offset + 1] === target) {
     return offset + 1;
   }
 
-  return -1; // Not found
+  return -1;
 }
 
 /**
@@ -154,6 +149,10 @@ export function fibonacciSearch(arr, target) {
  * @returns {number} index of target, or -1 if not found
  */
 export function interpolationFibonacciSearch(arr, target) {
+  // Edge case handling
+  if (!arr || arr.length === 0) return -1;
+  if (arr.length === 1) return arr[0] === target ? 0 : -1;
+
   let low = 0;
   let high = arr.length - 1;
   let consecutiveBadProbes = 0;
@@ -166,37 +165,32 @@ export function interpolationFibonacciSearch(arr, target) {
 
     const mid = Math.floor((low + high) / 2);
 
-    // True fallback: switch to Fibonacci if interpolation is probing poorly
     if (consecutiveBadProbes >= BAD_PROBE_THRESHOLD) {
-      const slice = arr.slice(low, high + 1);
-      const result = fibonacciSearch(slice, target);
-      return result !== -1 ? low + result : -1;
+      return fibonacciSearch(arr, target, low, high); // ✅ no slice, pass bounds directly
     }
 
-    // Estimate position using interpolation
     const pos =
       low +
       Math.floor(
         ((high - low) * (target - arr[low])) / (arr[high] - arr[low])
       );
 
+    // Edge case: pos out of bounds
+    if (pos < low || pos > high) return -1;
+
     if (arr[pos] === target) return pos;
 
-    // Track if interpolation is probing far from midpoint (skewed data)
     if (Math.abs(pos - mid) > (high - low) * 0.5) {
       consecutiveBadProbes++;
     } else {
-      consecutiveBadProbes = 0; // reset if probe looks healthy
+      consecutiveBadProbes = 0;
     }
 
     if (arr[pos] < target) low = pos + 1;
     else high = pos - 1;
   }
 
-  // Fallback for when target is out of bounds or range is exhausted
-  const slice = arr.slice(low, high + 1);
-  const result = fibonacciSearch(slice, target);
-  return result !== -1 ? low + result : -1;
+  return fibonacciSearch(arr, target, low, high); // ✅ no slice
 }
 
 
@@ -206,23 +200,19 @@ export function interpolationFibonacciSearch(arr, target) {
  * @param {number} target - value to search
  * @returns {number} index of target, or -1 if not found
  */
-export function exponentialSearch(arr, target) {
-  const n = arr.length;
+export function exponentialSearch(arr, target, start = 0, end = arr.length - 1) {
+  if (!arr || arr.length === 0) return -1;
+  
+  if (arr[start] === target) return start;
 
-  // If the first element is the target
-  if (n === 0) return -1;
-  if (arr[0] === target) return 0;
-
-  // Find range for binary search by repeated doubling
   let bound = 1;
-  while (bound < n && arr[bound] < target) {
+  while (start + bound <= end && arr[start + bound] < target) {
     bound *= 2;
   }
 
-  // Call binary search on the found range
-  const left = Math.floor(bound / 2);
-  const right = Math.min(bound, n - 1);
-  return binarySearch(arr, target, left, right);
+  const left = start + Math.floor(bound / 2);
+  const right = Math.min(start + bound, end);
+  return binarySearch(arr, target, left, right); // ✅ no slice needed
 }
 /**
  * Interpolation-Exponential Hybrid Search
@@ -231,6 +221,10 @@ export function exponentialSearch(arr, target) {
  * @returns {number} index of target, or -1 if not found
  */
 export function interpolationExponentialSearch(arr, target) {
+  // Edge case handling
+  if (!arr || arr.length === 0) return -1;
+  if (arr.length === 1) return arr[0] === target ? 0 : -1;
+
   let low = 0;
   let high = arr.length - 1;
   let consecutiveBadProbes = 0;
@@ -243,35 +237,30 @@ export function interpolationExponentialSearch(arr, target) {
 
     const mid = Math.floor((low + high) / 2);
 
-    // True fallback: switch to exponential search if interpolation is probing poorly
     if (consecutiveBadProbes >= BAD_PROBE_THRESHOLD) {
-      const slice = arr.slice(low, high + 1);
-      const result = exponentialSearch(slice, target);
-      return result !== -1 ? low + result : -1;
+      return exponentialSearch(arr, target, low, high); // ✅ no slice, pass bounds directly
     }
 
-    // Interpolation estimate
     const pos =
       low +
       Math.floor(
         ((high - low) * (target - arr[low])) / (arr[high] - arr[low])
       );
 
+    // Edge case: pos out of bounds
+    if (pos < low || pos > high) return -1;
+
     if (arr[pos] === target) return pos;
 
-    // Track if interpolation is probing far from midpoint (skewed data)
     if (Math.abs(pos - mid) > (high - low) * 0.5) {
       consecutiveBadProbes++;
     } else {
-      consecutiveBadProbes = 0; // reset if probe looks healthy
+      consecutiveBadProbes = 0;
     }
 
     if (arr[pos] < target) low = pos + 1;
     else high = pos - 1;
   }
 
-  // Fallback for when target is out of bounds or range is exhausted
-  const slice = arr.slice(low, high + 1);
-  const result = exponentialSearch(slice, target);
-  return result !== -1 ? low + result : -1;
+  return exponentialSearch(arr, target, low, high); // ✅ no slice
 }
