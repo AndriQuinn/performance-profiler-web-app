@@ -5,12 +5,12 @@ import { Link } from "react-router-dom";
 import "uplot/dist/uPlot.min.css";
 import Header2 from '../components/Header2';
 import Graph from '../components/Graph';
+import { downloadFromSessionStorage } from '../utils/downloadResult';
 
 
 const ViewResults = () => {
 
     const data = JSON.parse(sessionStorage.getItem('downSampling')) 
-    console.log(JSON.parse(sessionStorage.getItem('downSampling')) )
     const x = []
     for (var i = 0; i < 50; i++) {
         x.push(i+1)
@@ -108,14 +108,15 @@ const MetricsPanel = () => {
                 <Col className='my-2 p-4 border-gray me-3'>
                     <p className='second-font-color' style={{fontWeight: "500"}}> Total Execution Time </p>
                     <div className='d-flex justify-content-start align-items-center'>
-                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> 6.9 </h4>
+                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> {Number(sessionStorage.getItem("total")).toExponential(2)} </h4>
+                        
                         <p className='second-font-color my-0'> ms </p>
                     </div>
                 </Col>
                 <Col className='my-2 p-4 border-gray me-3'>
                     <p className='second-font-color ' style={{fontWeight: "500"}}> Average Time </p>
                     <div className='d-flex justify-content-start align-items-center'>
-                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> 6.9 </h4>
+                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> {Number(sessionStorage.getItem("average")).toExponential(2)} </h4>
                         <p className='second-font-color my-0'> ms </p>
                     </div>
                 </Col>
@@ -129,7 +130,7 @@ const MetricsPanel = () => {
                         <div className=' darkgreen-bg me-2 '>
                             <p className='my-0' style={{fontSize: "8"}}> SEARCH </p>
                         </div>
-                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> 6.9 </h4>
+                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> {Number(sessionStorage.getItem("min")).toExponential(2)} </h4>
                         <p className='second-font-color my-0'> ms </p>
                     </div>
                 </Col>
@@ -197,13 +198,13 @@ const GraphPanels = ({
                     <Graph data={nonUniformPoints}/>
                 </Col>
             </Row>
-            <Row>
+            {/* <Row>
                 <Col sm={12} className='my-2 p-4 border-gray w-100'>
                     <h5 > Detailed Performance Metrics </h5>
                     <p > Comprehensive breakdown of all benchmark results </p>
                     <Graph data={uniformPoints}/>
                 </Col>
-            </Row>
+            </Row> */}
         </Container>
     </>)
 }
@@ -217,7 +218,7 @@ const SubmitResultSection = () => {
                     <h5 className='my-0'> Submit Results </h5>
                 </div>
                 <p > Submit the performance data for further analysis </p>
-                <Button className='black-button p-2 justfiy-content-center align-items-center'>
+                <Button className='black-button p-2 justfiy-content-center align-items-center' onClick={() => downloadFromSessionStorage("downSampling")}>
                     <img src='/upload-white.svg' className='me-2 ' height={20}/>
                     Submit Performance Results
                 </Button>

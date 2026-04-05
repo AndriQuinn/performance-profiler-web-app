@@ -5,18 +5,18 @@ import "uplot/dist/uPlot.min.css";
 
 export default function Graph( {
     data
-    // x,
-    // y
 } ) {
     const chartRef = useRef(null);  
     const chartInstance = useRef(null);  
-    
     
     useEffect(() => {
         if (chartRef.current && !chartInstance.current) {
             const opts = {
                 width: chartRef.current.offsetWidth,   
                 height: 400,
+                scales: {
+                    x: { time: false }  // important for non-timestamp x-axis
+                },
                 series: [
                 {},
                 {

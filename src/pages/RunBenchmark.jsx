@@ -1,7 +1,6 @@
 import '../App.css'
 import { Container, Button , Dropdown, Form, Spinner } from "react-bootstrap";
 import Header from '../components/Header';
-import { Link } from "react-router-dom";
 import { useState } from 'react';
 import Header2 from '../components/Header2';
 import { useNavigate } from "react-router-dom";
@@ -10,7 +9,7 @@ const RunBenchamark = ({
     performBenchmark
 }) => {
 
-    const [attempts,setAttempts] = useState(1e3)
+    const [attempts,setAttempts] = useState(1e4)
     const navigate = useNavigate(); 
     const [selectedAlgo,setSelectedAlgo] = useState("Interpolation-Binary")
 

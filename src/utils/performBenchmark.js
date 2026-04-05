@@ -7,6 +7,7 @@ export const performBenchmark = (attempts,hybridSearch,results, downSamplingPlot
     var plotPoints = Math.floor(attempts / 50)
     var totalUni = [0,0] // Gets avereagen for each plot points 0 - interpolation, 1 - inter-bin , 1 - inter-fibo , 1 - inter-exp
     var totalNonUni = [0,0] // Gets avereagen for each plot points 0 - interpolation, 1 - inter-bin , 1 - inter-fibo , 1 - inter-exp
+    var min = 1
 
     const generatedData = JSON.parse(sessionStorage.getItem('generatedData'));
     downSamplingPlots.uniform.interpolation = []
@@ -33,7 +34,9 @@ export const performBenchmark = (attempts,hybridSearch,results, downSamplingPlot
 
       if (i >= plotPoints * counter[0]) {
         downSamplingPlots.uniform.interpolation.push(totalUni[0] / plotPoints)
+        min = Math.min(min, totalUni[0] / plotPoints)
         downSamplingPlots.nonUniform.interpolation.push(totalNonUni[0] / plotPoints)
+        min = Math.min(min, totalNonUni[0] / plotPoints) 
         counter[0] += 1
         totalUni[0] = 0
         totalNonUni[0] = 0
@@ -54,12 +57,23 @@ export const performBenchmark = (attempts,hybridSearch,results, downSamplingPlot
 
       if (i >= plotPoints * counter[1] ) {
         downSamplingPlots.uniform.hybridSearch.push(totalUni[1] / plotPoints)
+        min = Math.min(min, totalUni[1] / plotPoints)
         downSamplingPlots.nonUniform.hybridSearch.push(totalNonUni[1] / plotPoints)
+        min = Math.min(min, totalNonUni[1] / plotPoints)
         counter[1] += 1
         totalUni[1] = 0
         totalNonUni[1] = 0
       }
     } 
+
+    const total = downSamplingPlots.uniform.interpolation.reduce((acc, val) => acc + val, 0) + downSamplingPlots.uniform.hybridSearch.reduce((acc, val) => acc + val, 0) + downSamplingPlots.nonUniform.interpolation.reduce((acc, val) => acc + val, 0) + downSamplingPlots.nonUniform.hybridSearch.reduce((acc, val) => acc + val, 0)
     sessionStorage.setItem("downSampling", JSON.stringify(downSamplingPlots))
+    sessionStorage.setItem("min", min)
+    sessionStorage.setItem("total",total)
+    sessionStorage.setItem("average", total / 4)
+
+    
+
+
     console.log(downSamplingPlots)
 }

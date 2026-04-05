@@ -3,45 +3,13 @@ import './App.css'
 import Home from "./pages/Home";
 import RunBenchamark from "./pages/RunBenchmark";
 import ViewResults from "./pages/ViewResults";
-import { Navigate } from "react-router-dom";
-import { interpolationSearch, interpolationBinarySearch, interpolationFibonacciSearch, interpolationExponentialSearch } from "../src/utils/search-algo";
-import { getRandomInt } from "./utils/getRandomInt";
+import { interpolationBinarySearch, interpolationFibonacciSearch, interpolationExponentialSearch } from "../src/utils/search-algo";
 import { generateData } from "./utils/generateData";
 import { performBenchmark } from "./utils/performBenchmark";
+import { generateRandomGapsArr } from "./utils/generateData";
+import { ProtectedRoute } from "./utils/ProtectedRouter";
 
 function App() {
-
-  function ProtectedRoute({ children }) {
-    // Check sessionStorage for required data 
-    const data = sessionStorage.getItem("generatedData");
-
-    if (!data) {
-      // If not present, redirect to home or another page
-      return <Navigate to="/" replace />;
-    }
-
-    // If data exists, render the child component
-    return children;
-  }
-
-  function ProtectedRoute2({ children }) {
-    // Check sessionStorage for required data 
-    const data = sessionStorage.getItem("downSampling");
-
-    if (!data) {
-      // If not present, redirect to home or another page
-      return <Navigate to="/" replace />;
-    }
-
-    // If data exists, render the child component
-    return children;
-  }
-
-  const x = []
-
-  for (var i = 0; i < 50; i++) {
-    x.push(i+1)
-  }
 
   // Generated
   const generatedData = {
@@ -51,16 +19,20 @@ function App() {
 
   for (var i = 0; i < 1e3; i++) {
     generatedData.uniformArr.push(i+1)
-    let t = i / (1e3 - 1);
-    let value = Math.round(0 + Math.pow(t, 2) * (1e3 - 0)); // ✅ starts at min, ends at max, integer
-    generatedData.nonUniformArr.push(value);
+    
   }
+  generatedData.nonUniformArr = generateRandomGapsArr(1e3,0, 1e3*2)
+
+  console.log("Uniform: ", generatedData.uniformArr)
+  console.log("Non Uni: ", generatedData.nonUniformArr)
 
   const generateDataHandler = (size) => {
     if (size > 1e5) {
-      generateData(25e4 - 1e3, generatedData.uniformArr, generatedData.nonUniformArr, 25e4 - 1e3)
+      generateData(25e4 - 1e3, generatedData.uniformArr)
+      generatedData.nonUniformArr = generateRandomGapsArr(25e4 - 1e3,1e3+1, 25e4 * 2)
     } else {
-      generateData(size - 1e3, generatedData.uniformArr, generatedData.nonUniformArr, size - 1e3)
+      generateData(size - 1e3, generatedData.uniformArr)
+      generatedData.nonUniformArr = generateRandomGapsArr(size - 1e3,1e3+1, size  * 2)
     }
     
     sessionStorage.setItem("generatedData", JSON.stringify(generatedData))
@@ -130,20 +102,16 @@ function App() {
         <Route 
           path="/runBenchmark" 
           element={
-            <ProtectedRoute>
+            <ProtectedRoute storageKey={"generatedData"}>
               <RunBenchamark performBenchmark={benchMarkHandler} />
             </ProtectedRoute>  
           } />
         <Route 
           path="/viewResults" 
           element={
-            <ProtectedRoute2>
-              <ViewResults data={[
-                x,
-                downSamplingPlots.uniform.interpolation,
-                downSamplingPlots.uniform.interpolationBin
-              ]}/>
-            </ProtectedRoute2>
+            <ProtectedRoute storageKey={"downSampling"}>
+              <ViewResults/>
+            </ProtectedRoute>
           } />
       </Routes>
     </BrowserRouter>
