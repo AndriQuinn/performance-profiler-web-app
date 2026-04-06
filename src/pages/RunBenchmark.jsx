@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import { useState } from 'react';
 import Header2 from '../components/Header2';
 import { useNavigate } from "react-router-dom";
+import { useData } from '../context/DataContext';
 
 const RunBenchamark = ({
     performBenchmark
@@ -79,7 +80,7 @@ const ExecuteBenchmarkSection = ({
                     size={25}
                 />      
                 <div>
-                    <p className='my-2 second-font-color'> Run comprehensive tests to measure search, insert, and delete operations </p>
+                    <p className='my-2 second-font-color'> Run comprehensive tests to measure search operations </p>
                 </div>
             </div>
             <StartBenchmarkSection 
@@ -107,14 +108,14 @@ const StartBenchmarkSection = ({
    }) => {
 
     const [loading, setLoading] = useState(false);
+    const { generatedData } = useData();
 
     const handlePerform = (attempts) => {
         console.log("Attemps to be made: " + attempts)
            setLoading(true)
             
-
          setTimeout(() => {
-            performBenchmark(attempts,selectedAlgo); // synchronous code
+            performBenchmark(attempts,selectedAlgo,generatedData); // synchronous code
             setLoading(false);
             navigate("/viewResults");
         }, 50);
@@ -126,7 +127,7 @@ const StartBenchmarkSection = ({
                 <img src='/database.svg' className='me-3' height={35} />
                 <div className='d-flex flex-column justify-content-start'>
                     <h6> Dataset Loaded </h6>
-                    <h4 className='text-primary'> {sessionStorage.getItem("size")} </h4>
+                    <h4 className='text-primary fw-bold'> {Number(sessionStorage.getItem("size")).toLocaleString()} </h4>
                     <p className='my-0 second-font-color'> Total Records </p> 
                 </div>
             </div>
@@ -148,8 +149,8 @@ const StartBenchmarkSection = ({
                         </div>
                     )
                             : (
-                            <div>
-                                <img src='/play-button.svg' className='me-2 ' height={15}/>
+                            <div className='d-flex flex-row align-items-center'>
+                                <img src='/play-button.svg' className='me-2 my-0' height={15}/>
                                 Start Benchmark        
                             </div>
                             )}
@@ -166,6 +167,24 @@ const ImplmentationSection = ( {
     attempts,
     setAttempts
 } ) => {
+
+    const [warningState, setWarningState] = useState(false)
+    const [warning, setWarning] = useState(false)
+
+    const setAttemptsHander = (value) => {
+        if (value > 1e6+1) {
+            setWarningState(true)
+            setWarning(true)
+        } 
+        else if (value < 1e4-1) {
+            setWarningState(false)
+            setWarning(true)
+        } 
+        else {
+            setWarning(false)
+            setAttempts(value)
+        }
+    }
 
     return (<>
             <div className='d-flex flex-column justify-content-start p-3 p-md-4 my-3 border-gray'> 
@@ -201,8 +220,8 @@ const ImplmentationSection = ( {
                         <Form.Control
                             type={"number"}
                             value={attempts}
-                            onChange={(e) => setAttempts(e.target.value)}
-                            placeholder={attempts}
+                            onChange={(e) => setAttemptsHander(e.target.value)}
+                            placeholder={attempts.toLocaleString()}
                             className='bg-transparent rounded green-border-panel custom-placeholder my-input'
                             required
                         />
@@ -210,6 +229,14 @@ const ImplmentationSection = ( {
                 </Form>
 
                 <p className='second-font-color my-0 '> Max: 1,000,000 </p>
+                {
+                    warning ?  
+                        warningState ? 
+                            <p className='text-danger my-0'> Cannot exceed 1,000,000 </p> :
+                            <p className='text-danger my-0'> Cannot go below 10,000 </p> 
+                    : <p className='my-0 invisible'> {"Hi? Youre not suppose to see me actually :)"} </p>
+                }
+                    
             </div>    
         </div>
     </>)

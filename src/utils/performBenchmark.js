@@ -1,33 +1,33 @@
 import { interpolationSearch } from "./search-algo"
 import { getRandomInt } from "./getRandomInt"
 
-export const performBenchmark = (attempts,hybridSearch,results, downSamplingPlots) => {
+export const performBenchmark = (attempts,hybridSearch,results, downSamplingPlots, uniformArr,nonUniformArr) => {
 
     var counter = [1,1] // Multiplier
     var plotPoints = Math.floor(attempts / 50)
     var totalUni = [0,0] // Gets avereagen for each plot points 0 - interpolation, 1 - inter-bin , 1 - inter-fibo , 1 - inter-exp
     var totalNonUni = [0,0] // Gets avereagen for each plot points 0 - interpolation, 1 - inter-bin , 1 - inter-fibo , 1 - inter-exp
     var min = 1
-
-    const generatedData = JSON.parse(sessionStorage.getItem('generatedData'));
+    
     downSamplingPlots.uniform.interpolation = []
     downSamplingPlots.uniform.hybridSearch = []
     downSamplingPlots.nonUniform.interpolation = []
     downSamplingPlots.nonUniform.hybridSearch = []
     
     for (var i = 0; i <= attempts; i++) {
+      var target = getRandomInt(0,uniformArr.length)
       var start = performance.now() // Start Time
       var end = performance.now() // End Time
 
       // Baseline
       start = performance.now()
-      interpolationSearch(generatedData.uniformArr,getRandomInt(0,generatedData.uniformArr.length))
+      interpolationSearch(uniformArr,target)
       end = performance.now()
       results.uniform.interpolation.executionTime.push(end - start)
       totalUni[0] += (end - start)
 
       start = performance.now()
-      interpolationSearch(generatedData.nonUniformArr,getRandomInt(0,generatedData.nonUniformArr.length))
+      interpolationSearch(nonUniformArr,target)
       end = performance.now()
       results.nonUniform.interpolation.executionTime.push(end - start)
       totalNonUni[0] += (end-start)
@@ -44,13 +44,13 @@ export const performBenchmark = (attempts,hybridSearch,results, downSamplingPlot
       
       // Hybrid Algo
       start = performance.now()
-      hybridSearch(generatedData.uniformArr,getRandomInt(0,generatedData.uniformArr.length))
+      hybridSearch(uniformArr,getRandomInt(0,target))
       end = performance.now()
       results.uniform.hybridSearch.executionTime.push(end - start)
       totalUni[1] += (end - start)
 
       start = performance.now()
-      hybridSearch(generatedData.nonUniformArr,getRandomInt(0,generatedData.nonUniformArr.length))
+      hybridSearch(nonUniformArr,target)
       end = performance.now()
       results.nonUniform.hybridSearch.executionTime.push(end - start)
       totalNonUni[1] += (end - start)

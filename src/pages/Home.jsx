@@ -4,6 +4,9 @@ import Header from '../components/Header';
 import { useNavigate } from "react-router-dom";
 import Header2 from '../components/Header2';
 import { useState } from "react";
+import { useRef } from 'react';
+import { useData } from '../context/DataContext';
+import { generateData, generateRandomGapsArr } from '../utils/generateData';
 
 
 const Home = ({
@@ -71,7 +74,7 @@ const InstructionSection = () => {
                     <li> Upload your own dataset (CSV or JSON) </li>
                     <li> Generate a sample dataset automatically </li>
                 </ul>
-                <p> Each dataset record should contain the following fields: <b> SKU, Name, Category, Price, Stock </b> </p>
+                {/* <p> Each dataset record should contain the following fields: <b> SKU, Name, Category, Price, Stock </b> </p> */}
                 <p> Recommended dataset sizes: </p>
                 <ul>
                     <li> <b> 1,000 records </b> (small test) </li>
@@ -85,6 +88,32 @@ const InstructionSection = () => {
 }
 
 const ImportDatasetSection = () => {
+
+    const fileInputRef = useRef(null);
+    const handleFileUpload = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+        const content = event.target.result;
+
+        if (file.name.endsWith('.json')) {
+            const data = JSON.parse(content);
+            onDataLoaded(data.sort((a, b) => a - b));
+        }
+
+        if (file.name.endsWith('.csv')) {
+            const data = content
+            .split('\n')
+            .map(row => row.trim())
+            .filter(row => row)
+            .map(Number);
+            onDataLoaded(data.sort((a, b) => a - b));
+        }
+        };
+        reader.readAsText(file);
+    };
     return (
         <>
             <Container fluid className='border-gray my-4 p-4'>
@@ -98,7 +127,14 @@ const ImportDatasetSection = () => {
                         <p className='my-2 second-font-color'> Upload your dataset file (JSON or CSV format) or generate sample data </p>
                     </div>
                 </div>
-                <Button className='button-max gray-bg-2 gray-border-2 d-flex flex-column justify-content-center align-items-center p-5 my-3'>
+                <input
+                    type="file"
+                    accept=".json,.csv"
+                    ref={fileInputRef}
+                    onChange={handleFileUpload}
+                    style={{ display: 'none' }}
+                />
+                <Button className='button-max gray-bg-2 gray-border-2 d-flex flex-column justify-content-center align-items-center p-5 my-3' onClick={() => fileInputRef.current.click()}>
                     <img src='/upload.svg' style={{height: 30}} alt=''/>
                     <p> <b> Click to upload or drag and drop </b> </p>
                     <p className='second-font-color'> Supports JSON and CSV files </p>
@@ -109,14 +145,19 @@ const ImportDatasetSection = () => {
 }
 
 const SampleDataSection = ( {
-    generateData,
     navigate,
 } ) => {
 
     const [loading, setLoading] = useState(false);
+    const { setGeneratedData } = useData();
 
     const handleGenerateDate = (size) => {
-        generateData(size)
+        
+        const uniformArr = generateData(size);
+        const nonUniformArr = generateRandomGapsArr(size,0, size*2);
+        setGeneratedData({ uniformArr, nonUniformArr })
+        sessionStorage.setItem("generatedData",size)
+        sessionStorage.setItem("size",size)
         navigate("/runBenchmark")
     }
 

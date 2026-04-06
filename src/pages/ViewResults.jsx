@@ -160,9 +160,10 @@ const BenchmarkAnalysis = () => {
                     size={25}
                 />
                 <p className='my-2 second-font-color'> AI-driven insights into the current run </p>
-                <p className='mt-4 my-0 py-0'> The Hashing-based Indexing provided extremely fast insertion and deletion times (O(1) complexity), 
-                    making it highly efficient for dynamic datasets. 
-                    However, memory overhead was slightly higher due to hash table allocation, and range queries were not supported optimally.
+                <p className='mt-4 my-0 py-0'> "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
+                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
                 </p>
             </div>
 
@@ -184,7 +185,7 @@ const GraphPanels = ({
                         imagePath={"/chart.svg"}
                         size={20}
                     />
-                    <p className='my-2 second-font-color'> Time taken for each operation in nanoseconds </p>
+                    <p className='my-2 second-font-color'> Time taken for each operation in miliseconds </p>
                     <Graph data={uniformPoints}/>
                 </Col>
 
@@ -194,17 +195,10 @@ const GraphPanels = ({
                         imagePath={"/chart.svg"}
                         size={20}
                     />
-                    <p className='my-2 second-font-color'> Time taken for each operation in nanoseconds </p>
+                    <p className='my-2 second-font-color'> Time taken for each operation in miliseconds </p>
                     <Graph data={nonUniformPoints}/>
                 </Col>
             </Row>
-            {/* <Row>
-                <Col sm={12} className='my-2 p-4 border-gray w-100'>
-                    <h5 > Detailed Performance Metrics </h5>
-                    <p > Comprehensive breakdown of all benchmark results </p>
-                    <Graph data={uniformPoints}/>
-                </Col>
-            </Row> */}
         </Container>
     </>)
 }
@@ -215,12 +209,12 @@ const SubmitResultSection = () => {
             <div className='p-4 border-gray d-flex flex-column justify-content-start w-100 gray-bg'>
                 <div className='d-flex align-items-center'>
                     <img src='/upload.svg' alt='' height={20} className='me-2'/>
-                    <h5 className='my-0'> Submit Results </h5>
+                    <h5 className='my-0'> Export Results </h5>
                 </div>
-                <p > Submit the performance data for further analysis </p>
+                <p > Download performance data for further analysis </p>
                 <Button className='black-button p-2 justfiy-content-center align-items-center' onClick={() => downloadFromSessionStorage("downSampling")}>
                     <img src='/upload-white.svg' className='me-2 ' height={20}/>
-                    Submit Performance Results
+                    Download JSON Reports
                 </Button>
             </div>
         </Container>

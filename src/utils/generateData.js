@@ -1,13 +1,14 @@
-export const generateData = (size,arr) => {
+export const generateData = (size) => {
     
+    const arr = []
     // Fill data 
     for (var i = 0; i < size; i++) {
         // Uniform
         arr.push(i+1)
 
     }
+    return arr
 }
-
 
 export function generateRandomGapsArr(size, min, max) {
   const arr = [min];

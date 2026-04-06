@@ -15,23 +15,27 @@ export default function Graph( {
                 width: chartRef.current.offsetWidth,   
                 height: 400,
                 scales: {
-                    x: { time: false }  // important for non-timestamp x-axis
+                    x: { time: false }  // Time Stamp Off
                 },
                 series: [
-                {},
+                {
+                    label: "Batch" 
+                },
                 {
                     label: "Interpolation",
                     stroke: "red",
                     width: 2,
+                    value: (self, rawValue) => rawValue === null ? '--' : rawValue.toExponential(2) + ' ms'
                 },
                 {
                     label: sessionStorage.getItem("selectedAlgo"),
                     stroke: "blue",
                     width: 2,
+                    value: (self, rawValue) => rawValue === null ? '--' : rawValue.toExponential(2) + ' ms'
                 }
                 ],
                 axes: [{
-                    show: true,      // keep axis line if you want
+                    show: true,      
                     grid: { show: true },
                     values: () => [],
                 }, {}],
