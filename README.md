@@ -1,6 +1,9 @@
 # Performance Profiling System 📱 
 A very simple benchmarking web appilication for hybrid algorithms
 
+<img src="https://github.com/AndriQuinn/performance-profiler-web-app/blob/main/src/screenshots/home.png?raw=true" width="100%" alt="Banner">
+
+
 ## Features 🚀
 - Simple and Clean UI
 - Upload dataset or generate data
