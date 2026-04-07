@@ -1,3 +1,4 @@
+// Uniform
 export const generateData = (size) => {
     
     const arr = []
@@ -10,8 +11,10 @@ export const generateData = (size) => {
     return arr
 }
 
+// Non - Uniform
 export function generateRandomGapsArr(size, min, max) {
   const arr = [min];
+  
   for (let i = 1; i < size; i++) {
     const jump = Math.round(Math.random() * ((max - min) / size) * 5);
     const next = arr[arr.length - 1] + jump;

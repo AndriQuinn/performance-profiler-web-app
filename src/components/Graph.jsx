@@ -6,11 +6,12 @@ import "uplot/dist/uPlot.min.css";
 export default function Graph( {
     data
 } ) {
-    const chartRef = useRef(null);  
-    const chartInstance = useRef(null);  
+    const chartRef = useRef(null);   // Html reference
+    const chartInstance = useRef(null);   // Chart instance reference
     
     useEffect(() => {
         if (chartRef.current && !chartInstance.current) {
+            // Configurations
             const opts = {
                 width: chartRef.current.offsetWidth,   
                 height: 400,
@@ -25,13 +26,13 @@ export default function Graph( {
                     label: "Interpolation",
                     stroke: "red",
                     width: 2,
-                    value: (self, rawValue) => rawValue === null ? '--' : rawValue.toExponential(2) + ' ms'
+                    value: (self, rawValue) => rawValue === null ? '--' : rawValue.toExponential(2) + ' ms' // Uses exponential notation
                 },
                 {
                     label: sessionStorage.getItem("selectedAlgo"),
                     stroke: "blue",
                     width: 2,
-                    value: (self, rawValue) => rawValue === null ? '--' : rawValue.toExponential(2) + ' ms'
+                    value: (self, rawValue) => rawValue === null ? '--' : rawValue.toExponential(2) + ' ms' // Uses exponential notation
                 }
                 ],
                 axes: [{
@@ -41,7 +42,7 @@ export default function Graph( {
                 }, {}],
             };
     
-            chartInstance.current = new uPlot(opts, data, chartRef.current);
+            chartInstance.current = new uPlot(opts, data, chartRef.current); 
         }
     
         return () => {
@@ -54,7 +55,7 @@ export default function Graph( {
     }, []);
     
     return (<>
-        <div ref={chartRef} >
+        <div ref={chartRef} > {/* Render graph container */}
     
         </div>            
     </>)

@@ -10,22 +10,24 @@ import { downloadFromSessionStorage } from '../utils/downloadResult';
 
 const ViewResults = () => {
 
-    const data = JSON.parse(sessionStorage.getItem('downSampling')) 
+    const data = JSON.parse(sessionStorage.getItem('downSampling'))  // Parse the results 
+
+    // x value for graph 1..50
     const x = []
     for (var i = 0; i < 50; i++) {
-        x.push(i+1)
+        x.push(i+1) 
     }
     
     const uniformPoints = [
         x,
-        data.uniform.interpolation,
-        data.uniform.hybridSearch
+        data.interpolation.uniform,
+        data.hybridSearch.uniform
     ]
 
     const nonUniformPoints = [
         x,
-        data.nonUniform.interpolation,
-        data.nonUniform.hybridSearch
+        data.interpolation.nonUniform,
+        data.hybridSearch.nonUniform
     ]
 
     return (
@@ -105,6 +107,8 @@ const MetricsPanel = () => {
     return (<>
         <Container fluid className='my-4'>
             <Row g={3} >
+
+                {/* Total Execution Time panel */}
                 <Col className='my-2 p-4 border-gray me-3'>
                     <p className='second-font-color' style={{fontWeight: "500"}}> Total Execution Time </p>
                     <div className='d-flex justify-content-start align-items-center'>
@@ -113,6 +117,8 @@ const MetricsPanel = () => {
                         <p className='second-font-color my-0'> ms </p>
                     </div>
                 </Col>
+
+                {/* Average Time panel */}
                 <Col className='my-2 p-4 border-gray me-3'>
                     <p className='second-font-color ' style={{fontWeight: "500"}}> Average Time </p>
                     <div className='d-flex justify-content-start align-items-center'>
@@ -120,6 +126,8 @@ const MetricsPanel = () => {
                         <p className='second-font-color my-0'> ms </p>
                     </div>
                 </Col>
+
+                {/* Fastest Execution Time panel */}
                 <Col className='my-2 p-4 green-border green-bg'>
                     <div className='d-flex justify-content-start align-items-center mb-2'>
                         <img src='/check-mark.svg' alt='' height={16} className='me-1'/>
@@ -179,6 +187,8 @@ const GraphPanels = ({
     return (<>
         <Container fluid className='my-3'>
             <Row className='d-flex justify-content-between'>
+
+                {/* Uniform graph */}
                 <Col sm={12} className='my-2 p-4 border-gray '>
                     <Header2
                         headerText={"Execution Time Comparison (Uniform)"}
@@ -189,6 +199,7 @@ const GraphPanels = ({
                     <Graph data={uniformPoints}/>
                 </Col>
 
+                {/* Non-Uniform graph */}
                 <Col sm={12} className='my-2 p-4 border-gray '>
                     <Header2
                         headerText={"Execution Time Comparison (Non - Uniform)"}
@@ -212,6 +223,8 @@ const SubmitResultSection = () => {
                     <h5 className='my-0'> Export Results </h5>
                 </div>
                 <p > Download performance data for further analysis </p>
+
+                {/* Download results */}
                 <Button className='black-button p-2 justfiy-content-center align-items-center' onClick={() => downloadFromSessionStorage("downSampling")}>
                     <img src='/upload-white.svg' className='me-2 ' height={20}/>
                     Download JSON Reports

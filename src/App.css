@@ -19,6 +19,13 @@
   --green-font: #66c9a3;
 }
 
+.step-line {
+    flex: 1;
+    height: 1px;
+    background-color: var(--gray-border);
+    margin: 0 1.5rem;
+}
+
 .gray-bg {
   background: var(--gray);
 }

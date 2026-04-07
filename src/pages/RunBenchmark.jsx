@@ -7,12 +7,14 @@ import { useNavigate } from "react-router-dom";
 import { useData } from '../context/DataContext';
 
 const RunBenchamark = ({
-    performBenchmark
+    performBenchmark // Hander passed from App.jsx
 }) => {
 
-    const [attempts,setAttempts] = useState(1e4)
-    const navigate = useNavigate(); 
-    const [selectedAlgo,setSelectedAlgo] = useState("Interpolation-Binary")
+    const [attempts,setAttempts] = useState(1e4) // Default Search Attempts
+    const navigate = useNavigate(); // Manual page navigation
+    const [selectedAlgo,setSelectedAlgo] = useState("Interpolation-Binary") // Selected algorithm state
+    // Temporarily Removed - Switch Metric Feature - Memory Usage
+    // const [selectedMetric,setSelectedMetric] = useState("Execution Time")
 
     return (
         <>
@@ -21,6 +23,9 @@ const RunBenchamark = ({
                 <Container fluid className="white-bg p-4 p-md-5 my-3 ">
                     <Pages/>
                     <ExecuteBenchmarkSection 
+                        // Temporarily Removed - Switch Metric Feature - Memory Usage
+                        // selectedMetric={selectedMetric}
+                        // setSelectedMetric={setSelectedMetric}
                         selectedAlgo={selectedAlgo}
                         setSelectedAlgo={setSelectedAlgo}
                         navigate={navigate}
@@ -64,6 +69,9 @@ const Pages = () => {
 }
 
 const ExecuteBenchmarkSection = ({
+    // Temporarily Removed - Switch Metric Feature - Memory Usage
+    // selectedMetric,
+    // setSelectedMetric,
     selectedAlgo,
     setSelectedAlgo,
     navigate,
@@ -84,12 +92,18 @@ const ExecuteBenchmarkSection = ({
                 </div>
             </div>
             <StartBenchmarkSection 
+                // Temporarily Removed - Switch Metric Feature - Memory Usage
+                // selectedMetric={selectedMetric}
+                // setSelectedMetric={setSelectedMetric}
                 selectedAlgo={selectedAlgo}
                 navigate={navigate}
                 attempts={attempts}
                 performBenchmark={performBenchmark}
             />
             <ImplmentationSection 
+                // Temporarily Removed - Switch Metric Feature - Memory Usage
+                // selectedMetric={selectedMetric}
+                // setSelectedMetric={setSelectedMetric}
                 selectedAlgo={selectedAlgo}
                 setSelectedAlgo={setSelectedAlgo}
                 attempts={attempts} 
@@ -101,21 +115,23 @@ const ExecuteBenchmarkSection = ({
 }
 
 const StartBenchmarkSection = ({
+    selectedMetric,
     selectedAlgo,
     attempts,
     performBenchmark,
     navigate
    }) => {
 
-    const [loading, setLoading] = useState(false);
-    const { generatedData } = useData();
+    const [loading, setLoading] = useState(false); // Loading state
+    const { generatedData } = useData(); // Get the generated data from context
 
+    // Benchmark Handler
     const handlePerform = (attempts) => {
         console.log("Attemps to be made: " + attempts)
            setLoading(true)
             
          setTimeout(() => {
-            performBenchmark(attempts,selectedAlgo,generatedData); // synchronous code
+            performBenchmark(attempts,selectedAlgo,selectedMetric,generatedData); // synchronous code
             setLoading(false);
             navigate("/viewResults");
         }, 50);
@@ -132,6 +148,7 @@ const StartBenchmarkSection = ({
                 </div>
             </div>
 
+            {/* Start Benchmarking Button */}
             <div className='d-flex flex-row align-items-center justify-content-center mt-3 my-lg-0'>
                 <Button className='d-flex flex-row justify-content-center align-items-center p-2 black-button my-0' onClick={() => handlePerform(attempts)}>
                         
@@ -147,8 +164,7 @@ const StartBenchmarkSection = ({
                             /> 
                             Benchmarking...
                         </div>
-                    )
-                            : (
+                    ) : (
                             <div className='d-flex flex-row align-items-center'>
                                 <img src='/play-button.svg' className='me-2 my-0' height={15}/>
                                 Start Benchmark        
@@ -162,6 +178,9 @@ const StartBenchmarkSection = ({
 }
 
 const ImplmentationSection = ( {
+    // Temporarily Removed - Switch Metric Feature - Memory Usage
+    // selectedMetric, // 
+    // setSelectedMetric,
     selectedAlgo,
     setSelectedAlgo,
     attempts,
@@ -172,12 +191,12 @@ const ImplmentationSection = ( {
     const [warning, setWarning] = useState(false)
 
     const setAttemptsHander = (value) => {
-        if (value > 1e6+1) {
+        if (value >= 1e6+1) { // No more than 1M
             setWarningState(true)
             setWarning(true)
         } 
-        else if (value < 1e4-1) {
-            setWarningState(false)
+        else if (value <= 1e4-1) { // No less than 10k
+            setWarningState(false) 
             setWarning(true)
         } 
         else {
@@ -193,7 +212,8 @@ const ImplmentationSection = ( {
                 imagePath={"information-muted.svg"}
                 size={25}
             />      
-                
+            
+            {/* Algorithm Picker */}
             <div className='my-1 d-flex flex-column' >
                 <p className='second-font-color'> Implementation </p>
                 <Dropdown className='my-0 w-100 gray-bg-2'>
@@ -208,12 +228,30 @@ const ImplmentationSection = ( {
                 </Dropdown>
             </div>
 
+            {/* Temporarily Removed */}
+            {/* Switch Metric Feature - Memory Usage*/}
+        
+            {/* 
+            <div className='my-1 d-flex flex-column' >
+                <p className='second-font-color'> Metrics </p>
+                <Dropdown className='my-0 w-100 gray-bg-2'>
+                    <Dropdown.Toggle className='w-100 gray-bg-2' variant="secondary" id="dropdown-basic">
+                        {selectedMetric}
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu className='w-100 gray-bg-2'>
+                        <Dropdown.Item onClick={() => setSelectedMetric("Execution Time")}>Execution Time</Dropdown.Item>
+                        <Dropdown.Item onClick={() => setSelectedMetric("Memory Usage")}>Memory Usage</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
+            </div> */}
+
             <div className='mt-3'>
                 <div className='d-flex flex-row justify-content-start'>
                     <img src='search.svg' className='me-3' height={20} />
                     <h6> Search </h6>
                 </div>
-                    
+                
+                {/* Search attempt setter */}
                 <Form className='my-0'>
                     <Form.Group  >
                     <Form.Label className='dark-secondary-h'>Number of Search Operations</Form.Label>
@@ -228,6 +266,7 @@ const ImplmentationSection = ( {
                     </Form.Group>
                 </Form>
 
+                {/* Warning labels */}
                 <p className='second-font-color my-0 '> Max: 1,000,000 </p>
                 {
                     warning ?  
@@ -259,7 +298,5 @@ const BenchmarkInformationSection = () => {
         </div>
     </>)
 }
-
-
 
 export default RunBenchamark

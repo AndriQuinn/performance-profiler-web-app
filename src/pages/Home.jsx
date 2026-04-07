@@ -8,12 +8,11 @@ import { useRef } from 'react';
 import { useData } from '../context/DataContext';
 import { generateData, generateRandomGapsArr } from '../utils/generateData';
 
-
 const Home = ({
-    generateData
+    generateData // Generate data handler from App.jsx
 }) => {
 
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();  // Manual page navigation
 
     return (
         <>
@@ -34,21 +33,22 @@ const Home = ({
 const Pages = () => {
     return (
         <>
-            <div className='d-flex flex-column flex-lg-row justify-content-between px-5'>
-                <div className='d-flex flex-row align-items-center justify-content-center my-2 my-lg-0'>
+            <div className='d-flex flex-column flex-lg-row justify-content-between px-5 align-items-center'>
+                <div className='d-flex d-none d-md-block flex-row align-items-center justify-content-center my-2 my-lg-0'>
                     <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
                         1
                     </Button>
                     Import Dataset 
                 </div>
-                
-                <div className='d-flex flex-row align-items-center justify-content-center my-2 my-lg-0'>
+                {/* <div className="step-line d-none d-md-block"></div> */}
+                <div className='d-flex d-none d-md-block flex-row align-items-center justify-content-center my-2 my-lg-0'>
                     <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
                         2
                     </Button>
                     Run Benchmarks
                 </div>
-                <div className='d-flex flex-row align-items-center justify-content-center my-2 my-lg-0'>
+                {/* <div className="step-line d-none d-md-block"></div> */}
+                <div className='d-flex d-none d-md-block flex-row align-items-center justify-content-center my-2 my-lg-0'>
                     <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
                         3
                     </Button>
@@ -89,6 +89,7 @@ const InstructionSection = () => {
 
 const ImportDatasetSection = () => {
 
+    // Upload dataset handler
     const fileInputRef = useRef(null);
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
@@ -114,6 +115,7 @@ const ImportDatasetSection = () => {
         };
         reader.readAsText(file);
     };
+
     return (
         <>
             <Container fluid className='border-gray my-4 p-4'>
@@ -148,16 +150,17 @@ const SampleDataSection = ( {
     navigate,
 } ) => {
 
-    const [loading, setLoading] = useState(false);
-    const { setGeneratedData } = useData();
+    const [loading, setLoading] = useState(false); // Loading state
+    const { setGeneratedData } = useData(); // Generated data setter
 
+    // Generate data handler
     const handleGenerateDate = (size) => {
         
         const uniformArr = generateData(size);
         const nonUniformArr = generateRandomGapsArr(size,0, size*2);
-        setGeneratedData({ uniformArr, nonUniformArr })
-        sessionStorage.setItem("generatedData",size)
-        sessionStorage.setItem("size",size)
+        setGeneratedData({ uniformArr, nonUniformArr }) // Set generated data for context
+        sessionStorage.setItem("generatedData",size) // Set for protected route
+        sessionStorage.setItem("size",size) // Set for protected route
         navigate("/runBenchmark")
     }
 
@@ -174,6 +177,8 @@ const SampleDataSection = ( {
                         <p className='my-2 second-font-color'> Quickly generate synthetic e-commerce data for testing </p>
                     </div>
                     <div  className='d-flex flex-column flex-lg-row justify-content-between align-items-center my-3'>
+
+                        {/* Generate Data Buttons */}
                         <Button className='border-gray d-flex justify-content-center button-default' onClick={() => handleGenerateDate(1e3)}>
                             {loading ? (<Spinner
                                 as="span"
@@ -240,4 +245,5 @@ const SampleDataSection = ( {
         </>
     )
 }
+
 export default Home

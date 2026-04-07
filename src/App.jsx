@@ -6,33 +6,78 @@ import ViewResults from "./pages/ViewResults";
 import { interpolationBinarySearch, interpolationFibonacciSearch, interpolationExponentialSearch } from "../src/utils/search-algo";
 import { performBenchmark } from "./utils/performBenchmark";
 import { ProtectedRoute } from "./utils/ProtectedRouter";
+// import { performMemoryUsage } from "./utils/performMemoryUsage";
 
 
 function App() {
 
   const results =  {
-    uniform: {
-      interpolation: { executionTime: [], memoryUsage: [] },
-      hybridSearch: { executionTime: [], memoryUsage: [] }
+    interpolation: {
+      uniform: { executionTime: [], memoryUsage: [] },
+      nonUniform: { executionTime: [], memoryUsage: [] }
     },
-    nonUniform: {
-      interpolation: { executionTime: [], memoryUsage: [] },
-      hybridSearch: { executionTime: [], memoryUsage: [] }
+    hybridSearch: {
+      uniform: { executionTime: [], memoryUsage: [] },
+      nonUniform: { executionTime: [], memoryUsage: [] }
     }
   }
 
   const downSamplingPlots = {
-    uniform: {
-      interpolation: [],
-      hybridSearch: []
+    interpolation: {
+      uniform: [],
+      nonUniform: []
     },
-    nonUniform: {
-      interpolation: [],
-      hybridSearch: []
+    hybridSearch: {
+      uniform: [],
+      nonUniform: []
     }
   }
 
-  const benchMarkHandler = (attempts, hybridSearch,generatedData) => {
+  const benchMarkHandler = (attempts, hybridSearch,selectedMetric,generatedData) => {
+
+    // Temporarily Removed - Memory Usage Feature
+    // switch(selectedMetric) {
+
+    //   case 'Execution Time':
+    //     switch (hybridSearch) {
+    //       case 'Interpolation-Binary':
+    //           performBenchmark(attempts, interpolationBinarySearch, results, downSamplingPlots,generatedData.uniformArr, generatedData.nonUniformArr)
+    //           break
+    //       case 'Interpolation-Fibonacci':
+    //           performBenchmark(attempts, interpolationFibonacciSearch, results, downSamplingPlots,generatedData.uniformArr, generatedData.nonUniformArr)
+    //           break
+    //         case 'Interpolation-Exponential':
+    //           performBenchmark(attempts, interpolationExponentialSearch, results, downSamplingPlots,generatedData.uniformArr, generatedData.nonUniformArr)
+    //           break
+    //         default:
+    //           console.log("Error no hybrid found!")
+    //           break          
+    //       }
+        
+    //     console.log(hybridSearch);
+    //     break
+
+    //   case 'Memory Usage':
+    //     switch (hybridSearch) {
+    //       case 'Interpolation-Binary':
+    //           performMemoryUsage(attempts, interpolationBinarySearch, results, downSamplingPlots,generatedData.uniformArr, generatedData.nonUniformArr)
+    //           break
+    //       case 'Interpolation-Fibonacci':
+    //           performMemoryUsage(attempts, interpolationFibonacciSearch, results, downSamplingPlots,generatedData.uniformArr, generatedData.nonUniformArr)
+    //           break
+    //         case 'Interpolation-Exponential':
+    //           performMemoryUsage(attempts, interpolationExponentialSearch, results, downSamplingPlots,generatedData.uniformArr, generatedData.nonUniformArr)
+    //           break
+    //         default:
+    //           console.log("Error no hybrid found!")
+    //           break          
+    //     }
+    //     break
+    //   default:
+    //     console.log("Metric Not found!")
+    // }
+    // sessionStorage.setItem("selectedAlgo", hybridSearch)
+    // sessionStorage.setItem("Metric", selectedMetric)
 
     switch(hybridSearch) {
       case 'Interpolation-Binary':
@@ -61,6 +106,7 @@ function App() {
     console.log(downSamplingPlots)
   }
   
+
   return (
     <BrowserRouter>
       <Routes>
