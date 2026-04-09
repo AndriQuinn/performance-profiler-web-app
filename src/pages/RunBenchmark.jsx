@@ -6,9 +6,7 @@ import Header2 from '../components/Header2';
 import { useNavigate } from "react-router-dom";
 import { useData } from '../context/DataContext';
 
-const RunBenchamark = ({
-    performBenchmark // Hander passed from App.jsx
-}) => {
+const RunBenchamark = () => {
 
     const [attempts,setAttempts] = useState(1e4) // Default Search Attempts
     const navigate = useNavigate(); // Manual page navigation
@@ -29,7 +27,6 @@ const RunBenchamark = ({
                         selectedAlgo={selectedAlgo}
                         setSelectedAlgo={setSelectedAlgo}
                         navigate={navigate}
-                        performBenchmark={performBenchmark}
                         attempts={attempts}
                         setAttempts={setAttempts}
                     />
@@ -75,7 +72,6 @@ const ExecuteBenchmarkSection = ({
     selectedAlgo,
     setSelectedAlgo,
     navigate,
-    performBenchmark,
     attempts,
     setAttempts
 }) => {
@@ -98,7 +94,6 @@ const ExecuteBenchmarkSection = ({
                 selectedAlgo={selectedAlgo}
                 navigate={navigate}
                 attempts={attempts}
-                performBenchmark={performBenchmark}
             />
             <ImplmentationSection 
                 // Temporarily Removed - Switch Metric Feature - Memory Usage
@@ -118,23 +113,50 @@ const StartBenchmarkSection = ({
     selectedMetric,
     selectedAlgo,
     attempts,
-    performBenchmark,
     navigate
    }) => {
 
     const [loading, setLoading] = useState(false); // Loading state
     const { generatedData } = useData(); // Get the generated data from context
 
-    // Benchmark Handler
-    const handlePerform = (attempts) => {
-        console.log("Attemps to be made: " + attempts)
-           setLoading(true)
-            
-         setTimeout(() => {
-            performBenchmark(attempts,selectedAlgo,selectedMetric,generatedData); // synchronous code
+    const benchmarkHandler = (attempts,hybridSearch,selectedMetric) => {
+
+        console.log("Attempts to be done: ", attempts)
+        const downSamplingPlots = {
+            interpolation: {
+                uniform: [],
+                nonUniform: []
+            },
+            hybridSearch: {
+                uniform: [],
+                nonUniform: []
+            }
+        }
+
+        setLoading(true)
+
+        // Set worker to do the benchmark, Separate the benchmark from main thread. Prevent the UI from freezing
+        const worker = new Worker(new URL("../utils/worker.js", import.meta.url), { type: 'module' }) 
+
+        worker.postMessage({
+            attempts,
+            hybridSearch,
+            generatedData,
+            downSamplingPlots
+        })
+
+        worker.onmessage = (e) => {
+            const { downSamplingPlots, min, total } = e.data
+
+            sessionStorage.setItem("downSampling", JSON.stringify(downSamplingPlots)) // Set the final recorded data
+            sessionStorage.setItem("min", min) // Fastest execution time
+            sessionStorage.setItem("total",total) // Total execution time
+            sessionStorage.setItem("average", total / 4) // Average time
+            sessionStorage.setItem("selectedAlgo", selectedAlgo)
             setLoading(false);
+            console.log(downSamplingPlots)
             navigate("/viewResults");
-        }, 50);
+        }
     }
 
     return (<>
@@ -150,7 +172,7 @@ const StartBenchmarkSection = ({
 
             {/* Start Benchmarking Button */}
             <div className='d-flex flex-row align-items-center justify-content-center mt-3 my-lg-0'>
-                <Button className='d-flex flex-row justify-content-center align-items-center p-2 black-button my-0' onClick={() => handlePerform(attempts)}>
+                <Button className='d-flex flex-row justify-content-center align-items-center p-2 black-button my-0' onClick={() => benchmarkHandler(attempts,selectedAlgo)}>
                         
                     {loading ? (
                         <div>
