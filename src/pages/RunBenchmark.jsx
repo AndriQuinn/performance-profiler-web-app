@@ -116,7 +116,7 @@ const StartBenchmarkSection = ({
     navigate
    }) => {
 
-    const [loading, setLoading] = useState(false); // Loading state
+    const [isloading, setLoading] = useState(false); // Loading state
     const { generatedData } = useData(); // Get the generated data from context
 
     const benchmarkHandler = (attempts,hybridSearch,selectedMetric) => {
@@ -145,13 +145,15 @@ const StartBenchmarkSection = ({
             downSamplingPlots
         })
 
+        // Get the result
         worker.onmessage = (e) => {
             const { downSamplingPlots, min, total } = e.data
 
             sessionStorage.setItem("downSampling", JSON.stringify(downSamplingPlots)) // Set the final recorded data
             sessionStorage.setItem("min", min) // Fastest execution time
             sessionStorage.setItem("total",total) // Total execution time
-            sessionStorage.setItem("average", total / 4) // Average time
+            const NUM_SERIES = 4 // Interpolation - Uniform / Non Uniform - Hybrid - Uniform / Non Uniform
+            sessionStorage.setItem("average", total / NUM_SERIES) // Average time
             sessionStorage.setItem("selectedAlgo", selectedAlgo)
             setLoading(false);
             console.log(downSamplingPlots)
@@ -174,7 +176,7 @@ const StartBenchmarkSection = ({
             <div className='d-flex flex-row align-items-center justify-content-center mt-3 my-lg-0'>
                 <Button className='d-flex flex-row justify-content-center align-items-center p-2 black-button my-0' onClick={() => benchmarkHandler(attempts,selectedAlgo)}>
                         
-                    {loading ? (
+                    {isloading ? (
                         <div>
                             <Spinner
                                 as="span"
