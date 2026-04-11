@@ -174,7 +174,13 @@ const StartBenchmarkSection = ({
 
             {/* Start Benchmarking Button */}
             <div className='d-flex flex-row align-items-center justify-content-center mt-3 my-lg-0'>
-                <Button className='d-flex flex-row justify-content-center align-items-center p-2 black-button my-0' onClick={() => benchmarkHandler(attempts,selectedAlgo)}>
+                <Button className='d-flex flex-row justify-content-center align-items-center py-2 px-4 transparent border-gray-hover-gray my-0 me-3 black-font'>
+                    <div className='d-flex flex-row align-items-center'>
+                        <img src='/view.svg' className='me-2 my-0' height={15}/>
+                        View Dataset
+                    </div>
+                </Button>
+                <Button className='d-flex flex-row justify-content-center align-items-center  black-button my-0'py-2 px-5 onClick={() => benchmarkHandler(attempts,selectedAlgo)}>
                         
                     {isloading ? (
                         <div>
