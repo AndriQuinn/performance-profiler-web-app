@@ -4,20 +4,11 @@ import Home from "./pages/Home";
 import RunBenchamark from "./pages/RunBenchmark";
 import ViewResults from "./pages/ViewResults";
 import { ProtectedRoute } from "./utils/ProtectedRouter";
+import { useData } from "./context/DataContext";
 
 function App() {
 
-  // Temporarily Removed
-  // const results =  {
-  //   interpolation: {
-  //     uniform: { executionTime: [], memoryUsage: [] },
-  //     nonUniform: { executionTime: [], memoryUsage: [] }
-  //   },
-  //   hybridSearch: {
-  //     uniform: { executionTime: [], memoryUsage: [] },
-  //     nonUniform: { executionTime: [], memoryUsage: [] }
-  //   }
-  // }
+  const { dataset } = useData()
   
   return (
     <BrowserRouter>
@@ -30,7 +21,7 @@ function App() {
         <Route 
           path="/runBenchmark" 
           element={
-            <ProtectedRoute storageKey={"generatedData"}>
+            <ProtectedRoute routeKey={dataset}>
               <RunBenchamark  />
             </ProtectedRoute>  
           } />

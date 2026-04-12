@@ -4,7 +4,7 @@ import Header from '../components/Header';
 import { useState } from 'react';
 import Header2 from '../components/Header2';
 import { useNavigate } from "react-router-dom";
-import { useData } from '../context/DataContext';
+import { runBenchmark } from '../context/DataContext';
 
 const RunBenchamark = () => {
 
@@ -116,49 +116,14 @@ const StartBenchmarkSection = ({
     navigate
    }) => {
 
-    const [isloading, setLoading] = useState(false); // Loading state
-    const { generatedData } = useData(); // Get the generated data from context
+    const { runTimeBenchmark } = runBenchmark()
+    const [ isloading, setLoading ] = useState(false); // Loading state
+
 
     const benchmarkHandler = (attempts,hybridSearch,selectedMetric) => {
-
-        console.log("Attempts to be done: ", attempts)
-        const downSamplingPlots = {
-            interpolation: {
-                uniform: [],
-                nonUniform: []
-            },
-            hybridSearch: {
-                uniform: [],
-                nonUniform: []
-            }
-        }
-
         setLoading(true)
-
-        // Set worker to do the benchmark, Separate the benchmark from main thread. Prevent the UI from freezing
-        const worker = new Worker(new URL("../utils/worker.js", import.meta.url), { type: 'module' }) 
-
-        worker.postMessage({
-            attempts,
-            hybridSearch,
-            generatedData,
-            downSamplingPlots
-        })
-
-        // Get the result
-        worker.onmessage = (e) => {
-            const { downSamplingPlots, min, total } = e.data
-
-            sessionStorage.setItem("downSampling", JSON.stringify(downSamplingPlots)) // Set the final recorded data
-            sessionStorage.setItem("min", min) // Fastest execution time
-            sessionStorage.setItem("total",total) // Total execution time
-            const NUM_SERIES = 4 // Interpolation - Uniform / Non Uniform - Hybrid - Uniform / Non Uniform
-            sessionStorage.setItem("average", total / NUM_SERIES) // Average time
-            sessionStorage.setItem("selectedAlgo", selectedAlgo)
-            setLoading(false);
-            console.log(downSamplingPlots)
-            navigate("/viewResults");
-        }
+        runTimeBenchmark(attempts, hybridSearch)
+        setLoading(false)
     }
 
     return (<>
@@ -173,14 +138,14 @@ const StartBenchmarkSection = ({
             </div>
 
             {/* Start Benchmarking Button */}
-            <div className='d-flex flex-row align-items-center justify-content-center mt-3 my-lg-0'>
+            <div className='d-flex flex-column flex-lg-row align-items-center justify-content-center mt-3 my-lg-0'>
                 <Button className='d-flex flex-row justify-content-center align-items-center py-2 px-4 transparent border-gray-hover-gray my-0 me-3 black-font'>
                     <div className='d-flex flex-row align-items-center'>
                         <img src='/view.svg' className='me-2 my-0' height={15}/>
                         View Dataset
                     </div>
                 </Button>
-                <Button className='d-flex flex-row justify-content-center align-items-center  black-button my-0'py-2 px-5 onClick={() => benchmarkHandler(attempts,selectedAlgo)}>
+                <Button className='d-flex flex-row justify-content-center align-items-center  black-button my-0' onClick={() => benchmarkHandler(attempts,selectedAlgo)}>
                         
                     {isloading ? (
                         <div>

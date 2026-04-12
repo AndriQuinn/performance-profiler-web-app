@@ -1,10 +1,8 @@
 import { Navigate } from "react-router-dom";
 
-export function ProtectedRoute({ children,storageKey }) {
+export function ProtectedRoute({ children, routeKey }) {
     // Check sessionStorage for required data 
-    const data = sessionStorage.getItem(storageKey);
-
-    if (!data) {
+    if (!routeKey) {
       // If not present, redirect to home or another page
       return <Navigate to="/" replace />;
     }

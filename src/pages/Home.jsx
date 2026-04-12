@@ -3,10 +3,11 @@ import { Container, Button, Spinner } from "react-bootstrap";
 import Header from '../components/Header';
 import { useNavigate } from "react-router-dom";
 import Header2 from '../components/Header2';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRef } from 'react';
-import { useData } from '../context/DataContext';
-import { generateData, generateRandomGapsArr } from '../utils/generateData';
+// import { useData } from '../context/DataContext';
+// import { generateData, generateRandomGapsArr } from '../utils/generateData';
+import { useGenerate } from '../context/DataContext';
 
 const Home = ({
     generateData // Generate data handler from App.jsx
@@ -150,19 +151,22 @@ const SampleDataSection = ( {
     navigate,
 } ) => {
 
+    
+
+    const { dataset, generate } = useGenerate()
+
     const [loading, setLoading] = useState(false); // Loading state
-    const { setGeneratedData } = useData(); // Generated data setter
+    // const { setGeneratedData } = useData(); // Generated data setter
 
     // Generate data handler
     const handleGenerateDate = (size) => {
-        
-        const uniformArr = generateData(size);
-        const nonUniformArr = generateRandomGapsArr(size,0, size*2);
-        setGeneratedData({ uniformArr, nonUniformArr }) // Set generated data for context
-        sessionStorage.setItem("generatedData",size) // Set for protected route
-        sessionStorage.setItem("size",size) // Set for protected route
-        navigate("/runBenchmark")
+        generate(size)
+        // navigate("/runBenchmark")
     }
+
+    useEffect(() => {
+        if (dataset) { navigate('/runBenchmark') }
+    },[dataset])
 
     return (
         <>
