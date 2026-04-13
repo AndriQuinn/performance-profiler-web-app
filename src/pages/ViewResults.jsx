@@ -6,11 +6,14 @@ import "uplot/dist/uPlot.min.css";
 import Header2 from '../components/Header2';
 import Graph from '../components/Graph';
 import { downloadFromSessionStorage } from '../utils/downloadResult';
+import { useData } from '../hooks/useData';
 
 
 const ViewResults = () => {
 
-    const data = JSON.parse(sessionStorage.getItem('downSampling'))  // Parse the results 
+    const { benchmarkResult } = useData()
+
+    console.log(benchmarkResult)
 
     // x value for graph 1..50
     const x = []
@@ -20,14 +23,14 @@ const ViewResults = () => {
     
     const uniformPoints = [
         x,
-        data.interpolation.uniform,
-        data.hybridSearch.uniform
+        benchmarkResult.interpolation.uniform,
+        benchmarkResult.hybridSearch.uniform
     ]
 
     const nonUniformPoints = [
         x,
-        data.interpolation.nonUniform,
-        data.hybridSearch.nonUniform
+        benchmarkResult.interpolation.nonUniform,
+        benchmarkResult.hybridSearch.nonUniform,
     ]
 
     return (

@@ -46,6 +46,7 @@ export const performBenchmark = (attempts, hybridSearch, dataset ) => {
       }
     } 
 
+    console.log("inside function ",result)
     return result
 }
 

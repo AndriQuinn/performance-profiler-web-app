@@ -5,13 +5,9 @@ import { useNavigate } from "react-router-dom";
 import Header2 from '../components/Header2';
 import { useEffect, useState } from "react";
 import { useRef } from 'react';
-// import { useData } from '../context/DataContext';
-// import { generateData, generateRandomGapsArr } from '../utils/generateData';
-import { useGenerate } from '../context/DataContext';
+import { useGenerate } from '../hooks/useGenerate';
 
-const Home = ({
-    generateData // Generate data handler from App.jsx
-}) => {
+const Home = () => {
 
     const navigate = useNavigate();  // Manual page navigation
 
@@ -23,7 +19,7 @@ const Home = ({
                     <Pages/>
                     <InstructionSection/>
                     <ImportDatasetSection/>
-                    <SampleDataSection navigate={navigate} generateData={generateData}/>
+                    <SampleDataSection navigate={navigate}/>
                 </Container>
             </Container>    
             
@@ -150,18 +146,12 @@ const ImportDatasetSection = () => {
 const SampleDataSection = ( {
     navigate,
 } ) => {
-
-    
-
-    const { dataset, generate } = useGenerate()
-
+    const { dataset, generate } = useGenerate() // Data context
     const [loading, setLoading] = useState(false); // Loading state
-    // const { setGeneratedData } = useData(); // Generated data setter
 
     // Generate data handler
     const handleGenerateDate = (size) => {
         generate(size)
-        // navigate("/runBenchmark")
     }
 
     useEffect(() => {

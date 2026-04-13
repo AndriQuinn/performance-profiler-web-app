@@ -4,11 +4,11 @@ import Home from "./pages/Home";
 import RunBenchamark from "./pages/RunBenchmark";
 import ViewResults from "./pages/ViewResults";
 import { ProtectedRoute } from "./utils/ProtectedRouter";
-import { useData } from "./context/DataContext";
+import { useData } from "./hooks/useData";
 
 function App() {
 
-  const { dataset } = useData()
+  const { dataset,benchmarkResult } = useData()
   
   return (
     <BrowserRouter>
@@ -28,7 +28,7 @@ function App() {
         <Route 
           path="/viewResults" 
           element={
-            <ProtectedRoute storageKey={"downSampling"}>
+            <ProtectedRoute routeKey={benchmarkResult}>
               <ViewResults/>
             </ProtectedRoute>
           } />

@@ -1,10 +1,11 @@
 import '../App.css'
 import { Container, Button , Dropdown, Form, Spinner } from "react-bootstrap";
 import Header from '../components/Header';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Header2 from '../components/Header2';
 import { useNavigate } from "react-router-dom";
-import { runBenchmark } from '../context/DataContext';
+import { useData } from '../hooks/useData';
+import { useBenchmark } from '../hooks/useBenchmark';
 
 const RunBenchamark = () => {
 
@@ -112,19 +113,28 @@ const ExecuteBenchmarkSection = ({
 const StartBenchmarkSection = ({
     selectedMetric,
     selectedAlgo,
+    navigate,
     attempts,
-    navigate
    }) => {
 
-    const { runTimeBenchmark } = runBenchmark()
+    const { benchmarkResult } = useData()
+
+    const { runBenchmark } = useBenchmark()
     const [ isloading, setLoading ] = useState(false); // Loading state
 
 
     const benchmarkHandler = (attempts,hybridSearch,selectedMetric) => {
         setLoading(true)
-        runTimeBenchmark(attempts, hybridSearch)
+        runBenchmark(attempts, hybridSearch)
         setLoading(false)
     }
+
+    useEffect(()=> {
+        if (benchmarkResult) {
+            navigate('/viewResults')
+        }
+        
+    },[benchmarkResult])
 
     return (<>
         <div className='d-flex flex-column flex-lg-row justify-content-between align-items-center my-4 p-4 border-gray'> 
