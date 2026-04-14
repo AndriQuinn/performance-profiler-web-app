@@ -6,6 +6,7 @@ export const DataContext = createContext(null);
 export function DataProvider({ children }) {
 
   const workerRef = useRef(null)
+  const [ metrics, setMetrics ] = useState(null)
   const [ dataset, setDataset ] = useState(null)
   const [ benchmarkResult, setBenchmarkResult ] = useState(null)
   let size = null
@@ -26,6 +27,7 @@ export function DataProvider({ children }) {
   return (
     <DataContext.Provider value={{ 
       workerRef,
+      metrics, setMetrics,
       dataset, setDataset,
       benchmarkResult, setBenchmarkResult
       }}>

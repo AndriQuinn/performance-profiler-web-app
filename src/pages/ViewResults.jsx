@@ -7,13 +7,12 @@ import Header2 from '../components/Header2';
 import Graph from '../components/Graph';
 import { downloadFromSessionStorage } from '../utils/downloadResult';
 import { useData } from '../hooks/useData';
+import { useNavigate } from "react-router-dom";
 
 
 const ViewResults = () => {
 
     const { benchmarkResult } = useData()
-
-    console.log(benchmarkResult)
 
     // x value for graph 1..50
     const x = []
@@ -82,11 +81,20 @@ const Body = ({
     uniformPoints,
     nonUniformPoints
 }) => {
+
+    const { setBenchmarkResult } = useData()
+    const navigate = useNavigate()
+
+    const anotherBenchmarkHandler = () => {
+        setBenchmarkResult(null)
+        navigate("/runBenchmark")
+    }
+
     return (<>
         <Container fluid className=' my-5'>
             <div className='d-flex flex-row justify-content-start'>
                 <div className='d-flex flex-row align-items-center justify-content-center my-3 my-lg-0'>
-                    <Button as={Link} to="/runBenchmark" className='d-flex flex-row justify-content-center align-items-center py-2 px-3 button-transparent'  >
+                    <Button className='d-flex flex-row justify-content-center align-items-center py-2 px-3 button-transparent' onClick={() => anotherBenchmarkHandler()}>
                         <img src='/arrow.svg' className='me-2 ' height={15}/>
                         Run Another Benchmark
                     </Button>

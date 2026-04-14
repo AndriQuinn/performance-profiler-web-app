@@ -13,22 +13,17 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route 
-          path="/" 
+        <Route path="/" element={ <Home /> } />
+        <Route path="/runBenchmark" 
           element={
-            <Home />
-          } />
-        <Route 
-          path="/runBenchmark" 
-          element={
-            <ProtectedRoute routeKey={dataset}>
+            <ProtectedRoute routeKey={dataset}> {/* Check key before navigate */}
               <RunBenchamark  />
             </ProtectedRoute>  
           } />
         <Route 
           path="/viewResults" 
           element={
-            <ProtectedRoute routeKey={benchmarkResult}>
+            <ProtectedRoute routeKey={benchmarkResult}> {/* Check key before navigate */}
               <ViewResults/>
             </ProtectedRoute>
           } />

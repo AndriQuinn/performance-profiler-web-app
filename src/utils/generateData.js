@@ -2,12 +2,14 @@
 export const generateUniformData = (size) => {
   const datasetHeaders = ['SKU', 'Name', 'Category', 'Price', 'Stock'];
   const datasetPreview = Array.from({ length: size }, (_, i) => [
-    `${i+1}`,
+    i+1,
     `Generated Product ${i + 1}`,
     ['Electronics', 'Clothing', 'Home', 'Toys'][Math.floor(Math.random() * 4)],
     `$${(Math.random() * 100).toFixed(2)}`,
     Math.floor(Math.random() * 1000)
   ]);
+
+  console.log([datasetHeaders, ...datasetPreview])
 
   return [datasetHeaders,...datasetPreview]
 }
@@ -29,12 +31,14 @@ export const generateNonUniformData = (size) => {
   const sorted = [...set].sort((a, b) => a - b)
 
   const datasetPreview = Array.from({ length: size }, (_, i) => [
-    `${sorted[i]}`,
+    sorted[i],
     `Generated Product ${i + 1}`,
     ['Electronics', 'Clothing', 'Home', 'Toys'][Math.floor(Math.random() * 4)],
     `$${(Math.random() * 100).toFixed(2)}`,
     Math.floor(Math.random() * 1000)
   ])
+
+  console.log([datasetHeaders, ...datasetPreview])
 
   return [datasetHeaders, ...datasetPreview]
 }

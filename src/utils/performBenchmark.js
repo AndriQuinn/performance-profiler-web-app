@@ -12,7 +12,6 @@ export const performBenchmark = (attempts, hybridSearch, dataset ) => {
     // Incrementation for multiplying the plotPoints when attempts reached plotPoints 
     // eg. i >= plotPoints * counter => increment counter for the next threshold 
     let counter = 1 
-    let min = Infinity // Fastest operation after handling noise
 
     // Noise Handlers 
     const noiseHandlers = {
@@ -24,6 +23,12 @@ export const performBenchmark = (attempts, hybridSearch, dataset ) => {
     const result = {
       interpolation: { uniform: [], nonUniform: [] },
       hybridSearch: { uniform: [], nonUniform: [] }
+    }
+
+    const metrics = {
+      totalExecutionTime: Infinity,
+      averageTime: Infinity,
+      fastestOperation: Infinity
     }
 
     // --- Benchmark Loop --- 
@@ -40,8 +45,8 @@ export const performBenchmark = (attempts, hybridSearch, dataset ) => {
 
       // Handle noise / Down Sampling when iteration reached plotPoints
       if (i >= plotPoints * counter ) {
-        recordDownSampling(result.interpolation, plotPoints, noiseHandlers.interpolation, min)
-        recordDownSampling(result.hybridSearch, plotPoints, noiseHandlers.hybridSearch, min)
+        recordDownSampling(result.interpolation, plotPoints, noiseHandlers.interpolation, metrics.fastestOperation)
+        recordDownSampling(result.hybridSearch, plotPoints, noiseHandlers.hybridSearch, metrics.fastestOperation)
         counter += 1
       }
     } 

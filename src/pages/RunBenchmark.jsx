@@ -1,7 +1,7 @@
 import '../App.css'
 import { Container, Button , Dropdown, Form, Spinner } from "react-bootstrap";
 import Header from '../components/Header';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Header2 from '../components/Header2';
 import { useNavigate } from "react-router-dom";
 import { useData } from '../hooks/useData';
@@ -27,7 +27,6 @@ const RunBenchamark = () => {
                         // setSelectedMetric={setSelectedMetric}
                         selectedAlgo={selectedAlgo}
                         setSelectedAlgo={setSelectedAlgo}
-                        navigate={navigate}
                         attempts={attempts}
                         setAttempts={setAttempts}
                     />
@@ -72,7 +71,6 @@ const ExecuteBenchmarkSection = ({
     // setSelectedMetric,
     selectedAlgo,
     setSelectedAlgo,
-    navigate,
     attempts,
     setAttempts
 }) => {
@@ -93,7 +91,6 @@ const ExecuteBenchmarkSection = ({
                 // selectedMetric={selectedMetric}
                 // setSelectedMetric={setSelectedMetric}
                 selectedAlgo={selectedAlgo}
-                navigate={navigate}
                 attempts={attempts}
             />
             <ImplmentationSection 
@@ -113,12 +110,12 @@ const ExecuteBenchmarkSection = ({
 const StartBenchmarkSection = ({
     selectedMetric,
     selectedAlgo,
-    navigate,
     attempts,
    }) => {
 
-    const { benchmarkResult } = useData()
 
+    const { benchmarkResult } = useData()
+    const navigate = useNavigate()
     const { runBenchmark } = useBenchmark()
     const [ isloading, setLoading ] = useState(false); // Loading state
 
@@ -126,14 +123,12 @@ const StartBenchmarkSection = ({
     const benchmarkHandler = (attempts,hybridSearch,selectedMetric) => {
         setLoading(true)
         runBenchmark(attempts, hybridSearch)
-        setLoading(false)
     }
 
-    useEffect(()=> {
-        if (benchmarkResult) {
-            navigate('/viewResults')
-        }
-        
+    useEffect(() => {
+        if (!benchmarkResult) return;
+        setLoading(false)
+        navigate("/viewResults")
     },[benchmarkResult])
 
     return (<>

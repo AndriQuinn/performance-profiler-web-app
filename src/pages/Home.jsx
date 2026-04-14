@@ -147,10 +147,11 @@ const SampleDataSection = ( {
     navigate,
 } ) => {
     const { dataset, generate } = useGenerate() // Data context
-    const [loading, setLoading] = useState(false); // Loading state
+    const [loading, setLoading] = useState(null); // Loading state
 
     // Generate data handler
     const handleGenerateDate = (size) => {
+        setLoading(size)
         generate(size)
     }
 
@@ -173,8 +174,8 @@ const SampleDataSection = ( {
                     <div  className='d-flex flex-column flex-lg-row justify-content-between align-items-center my-3'>
 
                         {/* Generate Data Buttons */}
-                        <Button className='border-gray d-flex justify-content-center button-default' onClick={() => handleGenerateDate(1e3)}>
-                            {loading ? (<Spinner
+                        <Button className='border-gray d-flex justify-content-center button-default' onClick={ () => handleGenerateDate(1e3) }>
+                            {loading === 1e3 ? (<Spinner
                                 as="span"
                                 animation="border"
                                 size="sm"
@@ -188,8 +189,8 @@ const SampleDataSection = ( {
                                 </div>    
                              )}
                         </Button>
-                        <Button className='d-flex justify-content-center button-default' onClick={() => handleGenerateDate(1e4)}>
-                            {loading ? (<Spinner
+                        <Button className='d-flex justify-content-center button-default' onClick={ () => handleGenerateDate(1e4) }>
+                            {loading === 1e4 ? (<Spinner
                                 as="span"
                                 animation="border"
                                 size="sm"
@@ -203,8 +204,8 @@ const SampleDataSection = ( {
                                 </div>    
                              )}
                         </Button>
-                        <Button className='d-flex justify-content-center button-default' onClick={() => handleGenerateDate(1e5)}>
-                            {loading ? (<Spinner
+                        <Button className='d-flex justify-content-center button-default' onClick={ () => handleGenerateDate(1e5) }>
+                            {loading === 1e5? (<Spinner
                                 as="span"
                                 animation="border"
                                 size="sm"
@@ -218,13 +219,14 @@ const SampleDataSection = ( {
                                 </div>    
                              )}
                         </Button>
-                        <Button className='d-flex justify-content-center button-default' onClick={() => handleGenerateDate(1e6)}>
-                             {loading ? (<Spinner
+                        <Button className='d-flex justify-content-center button-default' onClick={ () => handleGenerateDate(1e6) }>
+                             {loading === 1e6? (<Spinner
                                 as="span"
                                 animation="border"
                                 size="sm"
                                 role="status"
                                 aria-hidden="true"
+                                
                             />)
                              : (
                                 <div className='py-3 d-flex flex-column justify-content-center align-items-center px-5'>
