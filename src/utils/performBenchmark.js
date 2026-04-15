@@ -6,6 +6,7 @@ export const performBenchmark = (attempts, hybridSearch, dataset ) => {
     //  --- Config ---
     const DOWNSAMPLE_RATE = 50
     let plotPoints = Math.floor(attempts / DOWNSAMPLE_RATE)  // For noise handling, attempts has minumum of 10k hence the lowest range is 200 to handle noise
+    const NUM_SERIES = 4 // Interpolation - Uniform / Non Uniform - Hybrid - Uniform / Non Uniform
 
     // --- State --- 
     
@@ -45,23 +46,31 @@ export const performBenchmark = (attempts, hybridSearch, dataset ) => {
 
       // Handle noise / Down Sampling when iteration reached plotPoints
       if (i >= plotPoints * counter ) {
-        recordDownSampling(result.interpolation, plotPoints, noiseHandlers.interpolation, metrics.fastestOperation)
-        recordDownSampling(result.hybridSearch, plotPoints, noiseHandlers.hybridSearch, metrics.fastestOperation)
+        recordDownSampling(result.interpolation, plotPoints, noiseHandlers.interpolation, metrics)
+        recordDownSampling(result.hybridSearch, plotPoints, noiseHandlers.hybridSearch, metrics)
         counter += 1
       }
     } 
 
+    metrics.totalExecutionTime = 
+      sumArray(result.interpolation.uniform) +
+      sumArray(result.interpolation.nonUniform) +
+      sumArray(result.hybridSearch.uniform) +
+      sumArray(result.hybridSearch.nonUniform) 
+    
+    metrics.averageTime = metrics.totalExecutionTime / NUM_SERIES
+
     console.log("inside function ",result)
-    return result
+    return { result, metrics }
 }
 
-const recordDownSampling = (result,plotPoints, noiseHandler, min) => {
+const recordDownSampling = (result,plotPoints, noiseHandler, metrics) => {
   // Record the final time after handling the noise
   result.uniform.push(noiseHandler.uniform / plotPoints) 
   result.nonUniform.push(noiseHandler.nonUniform / plotPoints)
 
   // Set fastest execution time after noise handling
-  min = Math.min(min.value, noiseHandler.uniform / plotPoints, noiseHandler.nonUniform / plotPoints)
+  metrics.fastestOperation = Math.min(metrics.fastestOperation, noiseHandler.uniform / plotPoints, noiseHandler.nonUniform / plotPoints)
   
   // Reset noise handler
   noiseHandler.uniform = 0 
@@ -75,3 +84,5 @@ const recordExecutionTime = (target, arr, noiseHandler, noiseHandlerKey, search)
   let end = performance.now()
   noiseHandler[noiseHandlerKey] += (end - start)
 }
+
+const sumArray = (arr) => arr.reduce((acc, val) => acc + val, 0)

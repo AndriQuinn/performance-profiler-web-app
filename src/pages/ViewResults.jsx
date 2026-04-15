@@ -12,36 +12,13 @@ import { useNavigate } from "react-router-dom";
 
 const ViewResults = () => {
 
-    const { benchmarkResult } = useData()
-
-    // x value for graph 1..50
-    const x = []
-    for (var i = 0; i < 50; i++) {
-        x.push(i+1) 
-    }
-    
-    const uniformPoints = [
-        x,
-        benchmarkResult.interpolation.uniform,
-        benchmarkResult.hybridSearch.uniform
-    ]
-
-    const nonUniformPoints = [
-        x,
-        benchmarkResult.interpolation.nonUniform,
-        benchmarkResult.hybridSearch.nonUniform,
-    ]
-
     return (
         <>
             <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center gray-bg p-1 p-md-2 p-lg-3 p-xl-5">
                 <Header/>
                 <Container fluid className="white-bg p-4 p-md-5 my-3 ">
                     <Pages/>
-                    <Body 
-                        uniformPoints={uniformPoints}
-                        nonUniformPoints={nonUniformPoints}
-                    />
+                    <Body/>
                 </Container>
             </Container>    
             
@@ -77,10 +54,7 @@ const Pages = () => {
     )
 }
 
-const Body = ({
-    uniformPoints,
-    nonUniformPoints
-}) => {
+const Body = () => {
 
     const { setBenchmarkResult } = useData()
     const navigate = useNavigate()
@@ -104,10 +78,7 @@ const Body = ({
             <MetricsPanel/>
             <ImplementationUsed/>
             <BenchmarkAnalysis/>
-            <GraphPanels 
-                uniformPoints={uniformPoints}
-                nonUniformPoints={nonUniformPoints}
-            />
+            <GraphPanels/>
             <SubmitResultSection/>
 
         </Container>
@@ -115,6 +86,9 @@ const Body = ({
 }
 
 const MetricsPanel = () => {
+
+    const { metrics } = useData()
+
     return (<>
         <Container fluid className='my-4'>
             <Row g={3} >
@@ -123,7 +97,7 @@ const MetricsPanel = () => {
                 <Col className='my-2 p-4 border-gray me-3'>
                     <p className='second-font-color' style={{fontWeight: "500"}}> Total Execution Time </p>
                     <div className='d-flex justify-content-start align-items-center'>
-                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> {Number(sessionStorage.getItem("total")).toExponential(2)} </h4>
+                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> {metrics.totalExecutionTime.toExponential(2)} </h4>
                         
                         <p className='second-font-color my-0'> ms </p>
                     </div>
@@ -133,7 +107,7 @@ const MetricsPanel = () => {
                 <Col className='my-2 p-4 border-gray me-3'>
                     <p className='second-font-color ' style={{fontWeight: "500"}}> Average Time </p>
                     <div className='d-flex justify-content-start align-items-center'>
-                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> {Number(sessionStorage.getItem("average")).toExponential(2)} </h4>
+                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> {metrics.averageTime.toExponential(2)} </h4>
                         <p className='second-font-color my-0'> ms </p>
                     </div>
                 </Col>
@@ -149,7 +123,7 @@ const MetricsPanel = () => {
                         <div className=' darkgreen-bg me-2 '>
                             <p className='my-0' style={{fontSize: "8"}}> SEARCH </p>
                         </div>
-                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> {Number(sessionStorage.getItem("min")).toExponential(2)} </h4>
+                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> {metrics.fastestOperation.toExponential(2)} </h4>
                         <p className='second-font-color my-0'> ms </p>
                     </div>
                 </Col>
@@ -190,10 +164,27 @@ const BenchmarkAnalysis = () => {
     </>)
 }
 
-const GraphPanels = ({
-    uniformPoints,
-    nonUniformPoints
-}) => {    
+const GraphPanels = () => {    
+
+    const { benchmarkResult } = useData()
+
+    // x value for graph 1..50
+    const x = []
+    for (var i = 0; i < 50; i++) {
+        x.push(i+1) 
+    }
+    
+    const uniformPoints = [
+        x,
+        benchmarkResult.interpolation.uniform,
+        benchmarkResult.hybridSearch.uniform
+    ]
+
+    const nonUniformPoints = [
+        x,
+        benchmarkResult.interpolation.nonUniform,
+        benchmarkResult.hybridSearch.nonUniform,
+    ]
 
     return (<>
         <Container fluid className='my-3'>

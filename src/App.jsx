@@ -8,7 +8,7 @@ import { useData } from "./hooks/useData";
 
 function App() {
 
-  const { dataset,benchmarkResult } = useData()
+  const { datasetArr,benchmarkResult } = useData()
   
   return (
     <BrowserRouter>
@@ -16,7 +16,7 @@ function App() {
         <Route path="/" element={ <Home /> } />
         <Route path="/runBenchmark" 
           element={
-            <ProtectedRoute routeKey={dataset}> {/* Check key before navigate */}
+            <ProtectedRoute routeKey={datasetArr}> {/* Check key before navigate */}
               <RunBenchamark  />
             </ProtectedRoute>  
           } />
