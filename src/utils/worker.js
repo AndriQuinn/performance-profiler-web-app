@@ -3,9 +3,7 @@ import { performBenchmark } from "./performBenchmark";
 import { generateUniformData, generateNonUniformData, generateTable } from "./generateData";
 import { interpolationBinarySearch, interpolationFibonacciSearch, interpolationExponentialSearch } from "./search-algo";
 
-let newDatasetArr = {
-
-}
+let newDatasetArr = {}
 
 // Define worker job: Perform the benchmark
 self.onmessage = (e) => {
@@ -20,9 +18,11 @@ self.onmessage = (e) => {
       break;
       
     case 'GET_TABLE':
-      const uniformTable = generateTable(datasetArr.uniformArr)
-      const nonUniformTable = generateTable(datasetArr.nonUniformArr)
-      self.postMessage({ type: 'GENERATED', uniformTable, nonUniformTable });
+      const uniformTable = generateTable(newDatasetArr.uniformArr)
+      const nonUniformTable = generateTable(newDatasetArr.nonUniformArr)
+      const newDatasetTable = { uniformTable, nonUniformTable }
+      
+      self.postMessage({ type: 'TABLE_GENERATED', newDatasetTable });
       break;
 
     // Run benchmark for selected algorithm

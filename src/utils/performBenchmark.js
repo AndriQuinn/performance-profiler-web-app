@@ -60,7 +60,6 @@ export const performBenchmark = (attempts, hybridSearch, dataset ) => {
     
     metrics.averageTime = metrics.totalExecutionTime / NUM_SERIES
 
-    console.log("inside function ",result)
     return { result, metrics }
 }
 

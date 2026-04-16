@@ -13,7 +13,7 @@ export const generateNonUniformData = (size) => {
     set.add(Math.floor(Math.random() * (max - min + 1)) + min)
   }
 
-  return new Int32Array([...set].sort((a, b) => a - b))
+  return [...set].sort((a, b) => a - b)
 }
 
 // Generate table from the given arr id
@@ -26,5 +26,6 @@ export const generateTable = (arr) => {
     `$${(Math.random() * 100).toFixed(2)}`,
     Math.floor(Math.random() * 1000)
   ])
+  
   return [headers, ...rows]
 }

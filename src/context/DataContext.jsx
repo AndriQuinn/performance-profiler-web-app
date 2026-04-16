@@ -16,9 +16,10 @@ export function DataProvider({ children }) {
     workerRef.current = new Worker(new URL('../utils/worker.js', import.meta.url), { type: 'module' });
     
     workerRef.current.onmessage = (e) => {
-      const { type, newResult, newMetrics, newDatasetArr } = e.data;
+      const { type, newResult, newMetrics, newDatasetArr, newDatasetTable } = e.data;
 
         if (type === 'GENERATED') setDatasetArr(newDatasetArr);
+        if (type === 'TABLE_GENERATED') setDatasetTable(newDatasetTable)
         if (type === 'BENCHMARK_RESULT') {
           setBenchmarkResult(newResult)};
           setMetrics(newMetrics)
