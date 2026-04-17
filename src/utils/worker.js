@@ -14,17 +14,16 @@ self.onmessage = (e) => {
     // Generate syntetic data
     case 'GENERATE':
       newDatasetArr = generateDataArr(payload.size)
-      self.postMessage({ type: 'GENERATED', newDatasetArr });
+      self.postMessage(
+        { type: 'GENERATED', 
+          newDatasetArr: {
+            uniformArr: Array.from(newDatasetArr.uniformArr),
+            nonUniformArr: Array.from(newDatasetArr.nonUniformArr)
+          }
+        },
+      );
       break;
       
-    case 'GET_TABLE':
-      const uniformTable = generateTable(newDatasetArr.uniformArr)
-      const nonUniformTable = generateTable(newDatasetArr.nonUniformArr)
-      const newDatasetTable = { uniformTable, nonUniformTable }
-      
-      self.postMessage({ type: 'TABLE_GENERATED', newDatasetTable });
-      break;
-
     // Run benchmark for selected algorithm
     case 'RUN_BENCHMARK':
       let newResult = null 

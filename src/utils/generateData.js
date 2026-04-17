@@ -1,6 +1,10 @@
 // Uniform Generation
 export const generateUniformData = (size) => {
-  return Array.from({ length: size }, (_, i) => i + 1)
+  const arr = new Int32Array(size)
+  for (let i = 0; i < size; i++) {
+    arr[i] = i + 1
+  }
+  return arr
 }
 
 // Non - Uniform Generation
@@ -13,12 +17,13 @@ export const generateNonUniformData = (size) => {
     set.add(Math.floor(Math.random() * (max - min + 1)) + min)
   }
 
-  return [...set].sort((a, b) => a - b)
+  const sorted = [...set].sort((a, b) => a - b)
+  return new Int32Array(sorted)
 }
 
 // Generate table from the given arr id
 export const generateTable = (arr) => {
-  const headers = ['SKU', 'Name', 'Category', 'Price', 'Stock']
+  //  headers = ['SKU', 'Name', 'Category', 'Price', 'Stock']
   const rows = arr.map((id) => [
     id,
     `Generated Product ${id}`,
@@ -27,5 +32,5 @@ export const generateTable = (arr) => {
     Math.floor(Math.random() * 1000)
   ])
   
-  return [headers, ...rows]
+  return [...rows]
 }

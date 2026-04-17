@@ -2,12 +2,12 @@ import { DataContext } from '../context/DataContext'
 import { useContext } from 'react';
 
 export function useTable() {
-  const { workerRef, datasetTable } = useContext(DataContext);
+  const { tableWorkerRef, datasetTable } = useContext(DataContext);
 
-  const generateTable = () => {
+  const getTable = ( limiter ) => {
     // Send worker
-    workerRef.current.postMessage({type: 'GET_TABLE'})
+    tableWorkerRef.current.postMessage({ type: 'GET_TABLE', payload: { limiter }})
   }
 
-  return { datasetTable, generateTable }
+  return { datasetTable, getTable }
 }

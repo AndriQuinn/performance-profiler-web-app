@@ -7,6 +7,7 @@ import { data, useNavigate } from "react-router-dom";
 import { useData } from '../hooks/useData';
 import { useBenchmark } from '../hooks/useBenchmark';
 import { useTable } from '../hooks/useTable'
+import { useGenerateTable } from '../hooks/useGenerateTable';
 
 const RunBenchamark = () => {
 
@@ -99,26 +100,33 @@ const StartBenchmarkSection = ({
 }) => {
 
     
-    const { benchmarkResult } = useData()
-    const { datasetTable, generateTable } = useTable()
+    const { benchmarkResult, datasetArr } = useData()
+    const { datasetTable } = useTable()
     const navigate = useNavigate()
     const { runBenchmark } = useBenchmark()
     const [ isloading, setLoading ] = useState(false); // Loading state
     const [ isShow, setShow] = useState(false)
-    const [datasetModal, setDatasetModal] = useState()
     const [limiter, setLimiter] = useState(1)
+    const { generateTable } = useGenerateTable()
+    const { getTable } = useTable()
 
 
     const benchmarkHandler = ( attempts,hybridSearch ) => {
         setLoading(true)
         runBenchmark(attempts, hybridSearch)
     }
+
+    useEffect(() => {
+        getTable(limiter)
+    }, [limiter])
     
     useEffect(() => {
-        if (!datasetTable) {
-            generateTable()
+        if (datasetArr) { 
+            generateTable(datasetArr)
+            getTable(limiter)
         }
-    },[])
+      },[datasetArr])
+
 
     useEffect(() => {
         if (!benchmarkResult) return;
@@ -137,8 +145,9 @@ const StartBenchmarkSection = ({
                 </div>
             </div>
 
-            {/* Start Benchmarking Button */}
+            
             <div className='d-flex flex-column flex-lg-row align-items-center justify-content-center mt-3 my-lg-0'>
+                {/* View Dataset Button */}
                 <Button className='d-flex flex-row justify-content-center align-items-center py-2 px-4 transparent border-gray-hover-gray my-3 my-lg-0 mx-0 mx-lg-3 black-font' onClick={() => setShow(true)}>
                     {!datasetTable ?
                     (
@@ -161,9 +170,11 @@ const StartBenchmarkSection = ({
                     }
                     
                 </Button>
-                <DatasetModal show={isShow} setShow={setShow} dataset={datasetTable} limiter={limiter} setLimiter={setLimiter}/>
+                {/* Modal for viewing dataset */}
+                <DatasetModal show={isShow} setShow={setShow} dataset={datasetTable} limiter={limiter} setLimiter={setLimiter} />
+                
+                {/* Start Benchmarking Button */}
                 <Button className='d-flex flex-row justify-content-center align-items-center  black-button my-0' onClick={() => benchmarkHandler(attempts,selectedAlgo)}>
-                        
                     {isloading ? (
                         <div>
                             <Spinner
@@ -290,48 +301,41 @@ const BenchmarkInformationSection = () => {
     </>)
 }
 
-const DataTable = ({table , header}) => {
-  const rows = table.slice(1)     // rest are data rows
+const DataTable = ({ table }) => {
+    const headers = ['SKU', 'Name', 'Category', 'Price', 'Stock']
+    const rows = table.slice(0)     // rest are data rows
 
-  return (
-    <Table striped bordered hover responsive className='p-5'>
-      <thead>
-        <tr>
-          {header.map((header, i) => (
-            <th key={i}>{header}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((row, i) => (
-          <tr key={i}>
-            {row.map((cell, j) => (
-              <td key={j}>{cell}</td>
+    return (
+        <Table striped bordered hover responsive className='p-5'>
+        <thead>
+            <tr>
+            {headers.map((header, i) => (
+                <th key={i}>{header}</th>
             ))}
-          </tr>
-        ))}
-      </tbody>
-    </Table>
-  )
+            </tr>
+        </thead>
+        <tbody>
+            {rows.map((row, i) => (
+            <tr key={i}>
+                {row.map((cell, j) => (
+                <td key={j}>{cell}</td>
+                ))}
+            </tr>
+            ))}
+        </tbody>
+        </Table>
+    )
 }
 
-const DatasetModal = ({ show, setShow, dataset, limiter, setLimiter }) => {
-    if (!dataset) {
-        return (<>
-        
-        </>)
-    }
+const DatasetModal = ({ show, setShow, dataset, limiter, setLimiter, handlePagination }) => {
+    if (!dataset) return;
 
     // -- Datasets -- 
     const uniformDataset = dataset.uniformTable
     const nonUniformDataset = dataset.nonUniformTable
     
-    // -- State --
+    // -- State -- eg. uniform or non uniform
     const [table, setTable] = useState(uniformDataset)
-    
-    // -- Config --
-    const ROW_NUM = 100
-    const OFFSET = 100
     
     return (<>
     
@@ -354,13 +358,13 @@ const DatasetModal = ({ show, setShow, dataset, limiter, setLimiter }) => {
                     <Button className='flex-fill transparent border-gray-hover-gray'  onClick={() => setTable(uniformDataset)}>Uniform </Button>
                     <Button className='flex-fill transparent border-gray-hover-gray'  onClick={() => setTable(nonUniformDataset)}>Non-Uniform </Button>
                 </div>
-                <DataTable table={table.slice(limiter*ROW_NUM-OFFSET, limiter*ROW_NUM+1)} header={table[0]}/>
+                <DataTable table={table}/>
             </Modal.Body>
 
             <Modal.Footer className='d-flex justify-content-between '>
-                <Button disabled={limiter <= 1} className='transparent border-gray-hover-gray' variant="secondary" onClick={() => setLimiter(limiter-1)}>{"<"}</Button>
+                <Button  className='transparent border-gray-hover-gray' variant="secondary" onClick={() => setLimiter(limiter - 1)}>{"<"}</Button>
                 <p> Current Page: {limiter}</p>
-                <Button disabled={limiter >= Math.floor(uniformDataset.length / ROW_NUM)} className='transparent border-gray-hover-gray' variant="secondary" onClick={() => setLimiter(limiter+1)}> {">"} </Button>
+                <Button  className='transparent border-gray-hover-gray' variant="secondary" onClick={() => setLimiter(limiter + 1)}> {">"} </Button>
             </Modal.Footer>
         </Modal>
     </>)
