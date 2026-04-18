@@ -6,84 +6,64 @@ import "uplot/dist/uPlot.min.css";
 import Header2 from '../components/Header2';
 import Graph from '../components/Graph';
 import { downloadFromSessionStorage } from '../utils/downloadResult';
+import { useData } from '../hooks/useData';
+import { useNavigate } from "react-router-dom";
 
 
 const ViewResults = () => {
 
-    const data = JSON.parse(sessionStorage.getItem('downSampling'))  // Parse the results 
-
-    // x value for graph 1..50
-    const x = []
-    for (var i = 0; i < 50; i++) {
-        x.push(i+1) 
-    }
-    
-    const uniformPoints = [
-        x,
-        data.interpolation.uniform,
-        data.hybridSearch.uniform
-    ]
-
-    const nonUniformPoints = [
-        x,
-        data.interpolation.nonUniform,
-        data.hybridSearch.nonUniform
-    ]
-
-    return (
-        <>
-            <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center gray-bg p-1 p-md-2 p-lg-3 p-xl-5">
-                <Header/>
-                <Container fluid className="white-bg p-4 p-md-5 my-3 ">
-                    <Pages/>
-                    <Body 
-                        uniformPoints={uniformPoints}
-                        nonUniformPoints={nonUniformPoints}
-                    />
-                </Container>
-            </Container>    
-            
-        </>
-    )
+    return (<>
+        <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center gray-bg p-1 p-md-2 p-lg-3 p-xl-5">
+            <Header/>
+            <Container fluid className="white-bg p-4 p-md-5 my-3 ">
+                <Pages/>
+                <Body/>
+            </Container>
+        </Container>    
+    </>)
 }
 
 const Pages = () => {
-    return (
-        <>
-            <div className='d-flex flex-column flex-lg-row justify-content-between px-5'>
-                <div className='d-flex flex-row align-items-center justify-content-center my-2 my-lg-0'>
-                    <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
-                        1
-                    </Button>
-                    Import Dataset 
-                </div>
-                
-                <div className='d-flex flex-row align-items-center justify-content-center my-2 my-lg-0'>
-                    <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
-                        2
-                    </Button>
-                    Run Benchmarks
-                </div>
-                <div className='d-flex flex-row align-items-center justify-content-center my-2 my-lg-0'>
-                    <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
-                        3
-                    </Button>
-                    View Results
-                </div>
+    return (<>
+        <div className='d-flex flex-column flex-lg-row justify-content-between px-5'>
+            <div className='d-flex flex-row align-items-center justify-content-center my-2 my-lg-0'>
+                <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
+                    1
+                </Button>
+                Import Dataset 
             </div>
-        </>
-    )
+                
+            <div className='d-flex flex-row align-items-center justify-content-center my-2 my-lg-0'>
+                <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
+                    2
+                </Button>
+                Run Benchmarks
+            </div>
+            <div className='d-flex flex-row align-items-center justify-content-center my-2 my-lg-0'>
+                <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
+                    3
+                </Button>
+                View Results
+            </div>
+        </div>
+    </>)
 }
 
-const Body = ({
-    uniformPoints,
-    nonUniformPoints
-}) => {
+const Body = () => {
+
+    const { setBenchmarkResult } = useData()
+    const navigate = useNavigate()
+
+    const anotherBenchmarkHandler = () => {
+        setBenchmarkResult(null)
+        navigate("/runBenchmark")
+    }
+
     return (<>
         <Container fluid className=' my-5'>
             <div className='d-flex flex-row justify-content-start'>
                 <div className='d-flex flex-row align-items-center justify-content-center my-3 my-lg-0'>
-                    <Button as={Link} to="/runBenchmark" className='d-flex flex-row justify-content-center align-items-center py-2 px-3 button-transparent'  >
+                    <Button className='d-flex flex-row justify-content-center align-items-center py-2 px-3 button-transparent' onClick={() => anotherBenchmarkHandler()}>
                         <img src='/arrow.svg' className='me-2 ' height={15}/>
                         Run Another Benchmark
                     </Button>
@@ -93,17 +73,17 @@ const Body = ({
             <MetricsPanel/>
             <ImplementationUsed/>
             <BenchmarkAnalysis/>
-            <GraphPanels 
-                uniformPoints={uniformPoints}
-                nonUniformPoints={nonUniformPoints}
-            />
-            <SubmitResultSection/>
+            <GraphPanels/>
+            <DownloadResultSection/>
 
         </Container>
     </>)    
 }
 
 const MetricsPanel = () => {
+
+    const { metrics } = useData()
+
     return (<>
         <Container fluid className='my-4'>
             <Row g={3} >
@@ -112,7 +92,7 @@ const MetricsPanel = () => {
                 <Col className='my-2 p-4 border-gray me-3'>
                     <p className='second-font-color' style={{fontWeight: "500"}}> Total Execution Time </p>
                     <div className='d-flex justify-content-start align-items-center'>
-                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> {Number(sessionStorage.getItem("total")).toExponential(2)} </h4>
+                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> {metrics.totalExecutionTime.toExponential(2)} </h4>
                         
                         <p className='second-font-color my-0'> ms </p>
                     </div>
@@ -122,7 +102,7 @@ const MetricsPanel = () => {
                 <Col className='my-2 p-4 border-gray me-3'>
                     <p className='second-font-color ' style={{fontWeight: "500"}}> Average Time </p>
                     <div className='d-flex justify-content-start align-items-center'>
-                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> {Number(sessionStorage.getItem("average")).toExponential(2)} </h4>
+                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> {metrics.averageTime.toExponential(2)} </h4>
                         <p className='second-font-color my-0'> ms </p>
                     </div>
                 </Col>
@@ -138,7 +118,7 @@ const MetricsPanel = () => {
                         <div className=' darkgreen-bg me-2 '>
                             <p className='my-0' style={{fontSize: "8"}}> SEARCH </p>
                         </div>
-                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> {Number(sessionStorage.getItem("min")).toExponential(2)} </h4>
+                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> {metrics.fastestOperation.toExponential(2)} </h4>
                         <p className='second-font-color my-0'> ms </p>
                     </div>
                 </Col>
@@ -179,10 +159,27 @@ const BenchmarkAnalysis = () => {
     </>)
 }
 
-const GraphPanels = ({
-    uniformPoints,
-    nonUniformPoints
-}) => {    
+const GraphPanels = () => {    
+
+    const { benchmarkResult } = useData()
+
+    // -- Graph Points --
+    const x = []
+    for (var i = 0; i < 50; i++) {
+        x.push(i+1) 
+    }
+    
+    const uniformPoints = [
+        x,
+        benchmarkResult.interpolation.uniform,
+        benchmarkResult.hybridSearch.uniform
+    ]
+
+    const nonUniformPoints = [
+        x,
+        benchmarkResult.interpolation.nonUniform,
+        benchmarkResult.hybridSearch.nonUniform,
+    ]
 
     return (<>
         <Container fluid className='my-3'>
@@ -214,7 +211,7 @@ const GraphPanels = ({
     </>)
 }
 
-const SubmitResultSection = () => {
+const DownloadResultSection = () => {
     return (<>
         <Container fluid className='my-3 px-0'>
             <div className='p-4 border-gray d-flex flex-column justify-content-start w-100 gray-bg'>

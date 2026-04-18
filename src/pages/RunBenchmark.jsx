@@ -1,18 +1,19 @@
 import '../App.css'
-import { Container, Button , Dropdown, Form, Spinner } from "react-bootstrap";
+import { Container, Button , Dropdown, Form, Spinner, Modal, Table } from "react-bootstrap";
 import Header from '../components/Header';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Header2 from '../components/Header2';
-import { useNavigate } from "react-router-dom";
-import { useData } from '../context/DataContext';
+import { data, useNavigate } from "react-router-dom";
+import { useData } from '../hooks/useData';
+import { useBenchmark } from '../hooks/useBenchmark';
+import { useTable } from '../hooks/useTable'
+import { useGenerateTable } from '../hooks/useGenerateTable';
 
 const RunBenchamark = () => {
 
+    // -- State --
     const [attempts,setAttempts] = useState(1e4) // Default Search Attempts
-    const navigate = useNavigate(); // Manual page navigation
     const [selectedAlgo,setSelectedAlgo] = useState("Interpolation-Binary") // Selected algorithm state
-    // Temporarily Removed - Switch Metric Feature - Memory Usage
-    // const [selectedMetric,setSelectedMetric] = useState("Execution Time")
 
     return (
         <>
@@ -21,12 +22,8 @@ const RunBenchamark = () => {
                 <Container fluid className="white-bg p-4 p-md-5 my-3 ">
                     <Pages/>
                     <ExecuteBenchmarkSection 
-                        // Temporarily Removed - Switch Metric Feature - Memory Usage
-                        // selectedMetric={selectedMetric}
-                        // setSelectedMetric={setSelectedMetric}
                         selectedAlgo={selectedAlgo}
                         setSelectedAlgo={setSelectedAlgo}
-                        navigate={navigate}
                         attempts={attempts}
                         setAttempts={setAttempts}
                     />
@@ -66,12 +63,8 @@ const Pages = () => {
 }
 
 const ExecuteBenchmarkSection = ({
-    // Temporarily Removed - Switch Metric Feature - Memory Usage
-    // selectedMetric,
-    // setSelectedMetric,
     selectedAlgo,
     setSelectedAlgo,
-    navigate,
     attempts,
     setAttempts
 }) => {
@@ -88,17 +81,10 @@ const ExecuteBenchmarkSection = ({
                 </div>
             </div>
             <StartBenchmarkSection 
-                // Temporarily Removed - Switch Metric Feature - Memory Usage
-                // selectedMetric={selectedMetric}
-                // setSelectedMetric={setSelectedMetric}
                 selectedAlgo={selectedAlgo}
-                navigate={navigate}
                 attempts={attempts}
             />
             <ImplmentationSection 
-                // Temporarily Removed - Switch Metric Feature - Memory Usage
-                // selectedMetric={selectedMetric}
-                // setSelectedMetric={setSelectedMetric}
                 selectedAlgo={selectedAlgo}
                 setSelectedAlgo={setSelectedAlgo}
                 attempts={attempts} 
@@ -110,56 +96,49 @@ const ExecuteBenchmarkSection = ({
 }
 
 const StartBenchmarkSection = ({
-    selectedMetric,
     selectedAlgo,
     attempts,
-    navigate
-   }) => {
+}) => {
 
-    const [isloading, setLoading] = useState(false); // Loading state
-    const { generatedData } = useData(); // Get the generated data from context
+    // -- Use Data --
+    const { benchmarkResult, datasetArr, datasetTable } = useData()
+    const { generateTable } = useGenerateTable()
+    const { getTable } = useTable()    
+    const { runBenchmark } = useBenchmark()
+    const navigate = useNavigate()
 
-    const benchmarkHandler = (attempts,hybridSearch,selectedMetric) => {
+    // -- State -- 
+    const [ isloading, setLoading ] = useState(false); // Loading state
+    const [ isShow, setShow] = useState(false)
+    const [limiter, setLimiter] = useState(1)
 
-        console.log("Attempts to be done: ", attempts)
-        const downSamplingPlots = {
-            interpolation: {
-                uniform: [],
-                nonUniform: []
-            },
-            hybridSearch: {
-                uniform: [],
-                nonUniform: []
-            }
-        }
-
+    // Handler
+    const benchmarkHandler = ( attempts,hybridSearch ) => {
         setLoading(true)
-
-        // Set worker to do the benchmark, Separate the benchmark from main thread. Prevent the UI from freezing
-        const worker = new Worker(new URL("../utils/worker.js", import.meta.url), { type: 'module' }) 
-
-        worker.postMessage({
-            attempts,
-            hybridSearch,
-            generatedData,
-            downSamplingPlots
-        })
-
-        // Get the result
-        worker.onmessage = (e) => {
-            const { downSamplingPlots, min, total } = e.data
-
-            sessionStorage.setItem("downSampling", JSON.stringify(downSamplingPlots)) // Set the final recorded data
-            sessionStorage.setItem("min", min) // Fastest execution time
-            sessionStorage.setItem("total",total) // Total execution time
-            const NUM_SERIES = 4 // Interpolation - Uniform / Non Uniform - Hybrid - Uniform / Non Uniform
-            sessionStorage.setItem("average", total / NUM_SERIES) // Average time
-            sessionStorage.setItem("selectedAlgo", selectedAlgo)
-            setLoading(false);
-            console.log(downSamplingPlots)
-            navigate("/viewResults");
-        }
+        runBenchmark(attempts, hybridSearch)
     }
+
+    // -- Side Effects -- 
+
+    // Watch Limiter - Get the new table when limiter changed
+    useEffect(() => {
+        getTable(limiter)
+    }, [limiter])
+    
+    // Generate the table + Get the 100 rows
+    useEffect(() => {
+        if (datasetArr) { 
+            generateTable(datasetArr)
+            getTable(limiter)
+        }
+      },[datasetArr])
+
+    // Navigate to result page after benchmark
+    useEffect(() => {
+        if (!benchmarkResult) return;
+        setLoading(false)
+        navigate("/viewResults")
+    },[benchmarkResult])
 
     return (<>
         <div className='d-flex flex-column flex-lg-row justify-content-between align-items-center my-4 p-4 border-gray'> 
@@ -172,16 +151,35 @@ const StartBenchmarkSection = ({
                 </div>
             </div>
 
-            {/* Start Benchmarking Button */}
-            <div className='d-flex flex-row align-items-center justify-content-center mt-3 my-lg-0'>
-                <Button className='d-flex flex-row justify-content-center align-items-center py-2 px-4 transparent border-gray-hover-gray my-0 me-3 black-font'>
+            <div className='d-flex flex-column flex-lg-row align-items-center justify-content-center mt-3 my-lg-0'>
+                {/* View Dataset Button */}
+                <Button className='d-flex flex-row justify-content-center align-items-center py-2 px-4 transparent border-gray-hover-gray my-3 my-lg-0 mx-0 mx-lg-3 black-font' onClick={() => setShow(true)}>
+                    {!datasetTable ?
+                    (
+                      <div>
+                        <Spinner
+                            as="span"
+                            animation="border"
+                            size="sm"
+                            role="status"
+                            aria-hidden="true"
+                            className='me-2'
+                        /> 
+                        Loading...
+                    </div>  
+                    ) : 
                     <div className='d-flex flex-row align-items-center'>
                         <img src='/view.svg' className='me-2 my-0' height={15}/>
                         View Dataset
                     </div>
+                    }
+                    
                 </Button>
-                <Button className='d-flex flex-row justify-content-center align-items-center  black-button my-0'py-2 px-5 onClick={() => benchmarkHandler(attempts,selectedAlgo)}>
-                        
+                {/* Modal for viewing dataset */}
+                <DatasetModal show={isShow} setShow={setShow} dataset={datasetTable} limiter={limiter} setLimiter={setLimiter} />
+                
+                {/* Start Benchmarking Button */}
+                <Button className='d-flex flex-row justify-content-center align-items-center  black-button my-0' onClick={() => benchmarkHandler(attempts,selectedAlgo)}>
                     {isloading ? (
                         <div>
                             <Spinner
@@ -202,24 +200,22 @@ const StartBenchmarkSection = ({
                             )}
                 </Button>
             </div>
-
         </div>
     </>)
 }
 
 const ImplmentationSection = ( {
-    // Temporarily Removed - Switch Metric Feature - Memory Usage
-    // selectedMetric, // 
-    // setSelectedMetric,
     selectedAlgo,
     setSelectedAlgo,
     attempts,
     setAttempts
 } ) => {
 
+    // -- State --
     const [warningState, setWarningState] = useState(false)
     const [warning, setWarning] = useState(false)
 
+    // Handler
     const setAttemptsHander = (value) => {
         if (value >= 1e6+1) { // No more than 1M
             setWarningState(true)
@@ -257,23 +253,6 @@ const ImplmentationSection = ( {
                     </Dropdown.Menu>
                 </Dropdown>
             </div>
-
-            {/* Temporarily Removed */}
-            {/* Switch Metric Feature - Memory Usage*/}
-        
-            {/* 
-            <div className='my-1 d-flex flex-column' >
-                <p className='second-font-color'> Metrics </p>
-                <Dropdown className='my-0 w-100 gray-bg-2'>
-                    <Dropdown.Toggle className='w-100 gray-bg-2' variant="secondary" id="dropdown-basic">
-                        {selectedMetric}
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu className='w-100 gray-bg-2'>
-                        <Dropdown.Item onClick={() => setSelectedMetric("Execution Time")}>Execution Time</Dropdown.Item>
-                        <Dropdown.Item onClick={() => setSelectedMetric("Memory Usage")}>Memory Usage</Dropdown.Item>
-                    </Dropdown.Menu>
-                </Dropdown>
-            </div> */}
 
             <div className='mt-3'>
                 <div className='d-flex flex-row justify-content-start'>
@@ -326,6 +305,89 @@ const BenchmarkInformationSection = () => {
                 <li> <p  className='my-0' style={{color: "#654321"}}> <b> Implementation: </b> Interpolation Hybrid Algorithms </p> </li>
             </ul>
         </div>
+    </>)
+}
+
+const DataTable = ({ table }) => {
+    const headers = ['SKU', 'Name', 'Category', 'Price', 'Stock'] // Headers
+    const rows = table.slice(0)     // Rest are data rows
+
+    return (
+        <Table striped bordered hover responsive className='p-5'>
+            <thead>
+                {/* Headers */}
+                <tr>
+                {headers.map((header, i) => (
+                    <th key={i}>{header}</th>
+                ))}
+                </tr>
+            </thead>
+            <tbody>
+                {/* Rows */}
+                {rows.map((row, i) => (
+                <tr key={i}>
+                    {row.map((cell, j) => (
+                    <td key={j}>{cell}</td>
+                    ))}
+                </tr>
+                ))}
+            </tbody>
+        </Table>
+    )
+}
+
+const DatasetModal = ({ show, setShow, dataset, limiter, setLimiter }) => {
+    if (!dataset) return null;
+
+    // -- Datasets -- 
+    const uniformDataset = dataset.uniformTable
+    const nonUniformDataset = dataset.nonUniformTable
+    
+    // -- State -- eg. uniform or non uniform
+    const [mode, setMode] = useState('uniform')
+    const table = mode === 'uniform' ? dataset.uniformTable : dataset.nonUniformTable
+
+    // -- Config -- 
+    const SIZE = Number(sessionStorage.getItem("size"))
+    const ROW_NUM = 100
+    
+    return (<>
+    
+        <Modal 
+            show={show} 
+            size="xl"         
+            onHide={() => setShow(false)} 
+        >
+            <Modal.Header closeButton>
+                <Modal.Title className='w-100'> 
+                    <div className='d-flex flex-column flex-md-row align-items-center my-3'>
+                        <h4 className='my-0 mx-0 me-md-3'> Dataset Preview </h4>
+                        <p className='my-0 second-font-color'> ({Number(sessionStorage.getItem("size")).toLocaleString()}) rows  </p>
+                    </div>
+                </Modal.Title>
+            </Modal.Header>
+
+            <Modal.Body style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+                {/* Uniform and Non Uniform Toggle */}
+                <div className='d-flex w-100 gap-2 mb-3'>
+                    <Button className='flex-fill transparent border-gray-hover-gray'  onClick={() => setMode('uniform')}>Uniform </Button>
+                    <Button className='flex-fill transparent border-gray-hover-gray'  onClick={() => setMode('nonUniform')}>Non-Uniform </Button>
+                </div>
+                {/* Render Table */}
+                <DataTable table={table}/> 
+            </Modal.Body>
+
+            <Modal.Footer className='d-flex justify-content-between '>
+                <Button className={ limiter <= 1 ? "invisible disabled" : 'transparent border-gray-hover-gray' } onClick={() => setLimiter(limiter - 1)}>
+                    {"<"} Previous
+                </Button>
+                <p className='second-font-color'> Page {limiter} of {SIZE / ROW_NUM} </p>
+                <Button className={ limiter >= (SIZE / ROW_NUM) ? "invisible disabled" : 'transparent border-gray-hover-gray' } onClick={() => setLimiter(limiter + 1)}>
+                    Next {">"} 
+                </Button>
+            </Modal.Footer>
+        </Modal>
+
     </>)
 }
 
