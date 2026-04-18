@@ -11,6 +11,7 @@ import { useGenerateTable } from '../hooks/useGenerateTable';
 
 const RunBenchamark = () => {
 
+    // -- State --
     const [attempts,setAttempts] = useState(1e4) // Default Search Attempts
     const [selectedAlgo,setSelectedAlgo] = useState("Interpolation-Binary") // Selected algorithm state
 
@@ -99,27 +100,32 @@ const StartBenchmarkSection = ({
     attempts,
 }) => {
 
-    
-    const { benchmarkResult, datasetArr } = useData()
-    const { datasetTable } = useTable()
-    const navigate = useNavigate()
+    // -- Use Data --
+    const { benchmarkResult, datasetArr, datasetTable } = useData()
+    const { generateTable } = useGenerateTable()
+    const { getTable } = useTable()    
     const { runBenchmark } = useBenchmark()
+    const navigate = useNavigate()
+
+    // -- State -- 
     const [ isloading, setLoading ] = useState(false); // Loading state
     const [ isShow, setShow] = useState(false)
     const [limiter, setLimiter] = useState(1)
-    const { generateTable } = useGenerateTable()
-    const { getTable } = useTable()
 
-
+    // Handler
     const benchmarkHandler = ( attempts,hybridSearch ) => {
         setLoading(true)
         runBenchmark(attempts, hybridSearch)
     }
 
+    // -- Side Effects -- 
+
+    // Watch Limiter - Get the new table when limiter changed
     useEffect(() => {
         getTable(limiter)
     }, [limiter])
     
+    // Generate the table + Get the 100 rows
     useEffect(() => {
         if (datasetArr) { 
             generateTable(datasetArr)
@@ -127,7 +133,7 @@ const StartBenchmarkSection = ({
         }
       },[datasetArr])
 
-
+    // Navigate to result page after benchmark
     useEffect(() => {
         if (!benchmarkResult) return;
         setLoading(false)
@@ -145,7 +151,6 @@ const StartBenchmarkSection = ({
                 </div>
             </div>
 
-            
             <div className='d-flex flex-column flex-lg-row align-items-center justify-content-center mt-3 my-lg-0'>
                 {/* View Dataset Button */}
                 <Button className='d-flex flex-row justify-content-center align-items-center py-2 px-4 transparent border-gray-hover-gray my-3 my-lg-0 mx-0 mx-lg-3 black-font' onClick={() => setShow(true)}>
@@ -206,9 +211,11 @@ const ImplmentationSection = ( {
     setAttempts
 } ) => {
 
+    // -- State --
     const [warningState, setWarningState] = useState(false)
     const [warning, setWarning] = useState(false)
 
+    // Handler
     const setAttemptsHander = (value) => {
         if (value >= 1e6+1) { // No more than 1M
             setWarningState(true)
@@ -302,40 +309,47 @@ const BenchmarkInformationSection = () => {
 }
 
 const DataTable = ({ table }) => {
-    const headers = ['SKU', 'Name', 'Category', 'Price', 'Stock']
-    const rows = table.slice(0)     // rest are data rows
+    const headers = ['SKU', 'Name', 'Category', 'Price', 'Stock'] // Headers
+    const rows = table.slice(0)     // Rest are data rows
 
     return (
         <Table striped bordered hover responsive className='p-5'>
-        <thead>
-            <tr>
-            {headers.map((header, i) => (
-                <th key={i}>{header}</th>
-            ))}
-            </tr>
-        </thead>
-        <tbody>
-            {rows.map((row, i) => (
-            <tr key={i}>
-                {row.map((cell, j) => (
-                <td key={j}>{cell}</td>
+            <thead>
+                {/* Headers */}
+                <tr>
+                {headers.map((header, i) => (
+                    <th key={i}>{header}</th>
                 ))}
-            </tr>
-            ))}
-        </tbody>
+                </tr>
+            </thead>
+            <tbody>
+                {/* Rows */}
+                {rows.map((row, i) => (
+                <tr key={i}>
+                    {row.map((cell, j) => (
+                    <td key={j}>{cell}</td>
+                    ))}
+                </tr>
+                ))}
+            </tbody>
         </Table>
     )
 }
 
-const DatasetModal = ({ show, setShow, dataset, limiter, setLimiter, handlePagination }) => {
-    if (!dataset) return;
+const DatasetModal = ({ show, setShow, dataset, limiter, setLimiter }) => {
+    if (!dataset) return null;
 
     // -- Datasets -- 
     const uniformDataset = dataset.uniformTable
     const nonUniformDataset = dataset.nonUniformTable
     
     // -- State -- eg. uniform or non uniform
-    const [table, setTable] = useState(uniformDataset)
+    const [mode, setMode] = useState('uniform')
+    const table = mode === 'uniform' ? dataset.uniformTable : dataset.nonUniformTable
+
+    // -- Config -- 
+    const SIZE = Number(sessionStorage.getItem("size"))
+    const ROW_NUM = 100
     
     return (<>
     
@@ -354,19 +368,26 @@ const DatasetModal = ({ show, setShow, dataset, limiter, setLimiter, handlePagin
             </Modal.Header>
 
             <Modal.Body style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+                {/* Uniform and Non Uniform Toggle */}
                 <div className='d-flex w-100 gap-2 mb-3'>
-                    <Button className='flex-fill transparent border-gray-hover-gray'  onClick={() => setTable(uniformDataset)}>Uniform </Button>
-                    <Button className='flex-fill transparent border-gray-hover-gray'  onClick={() => setTable(nonUniformDataset)}>Non-Uniform </Button>
+                    <Button className='flex-fill transparent border-gray-hover-gray'  onClick={() => setMode('uniform')}>Uniform </Button>
+                    <Button className='flex-fill transparent border-gray-hover-gray'  onClick={() => setMode('nonUniform')}>Non-Uniform </Button>
                 </div>
-                <DataTable table={table}/>
+                {/* Render Table */}
+                <DataTable table={table}/> 
             </Modal.Body>
 
             <Modal.Footer className='d-flex justify-content-between '>
-                <Button  className='transparent border-gray-hover-gray' variant="secondary" onClick={() => setLimiter(limiter - 1)}>{"<"}</Button>
-                <p> Current Page: {limiter}</p>
-                <Button  className='transparent border-gray-hover-gray' variant="secondary" onClick={() => setLimiter(limiter + 1)}> {">"} </Button>
+                <Button className={ limiter <= 1 ? "invisible disabled" : 'transparent border-gray-hover-gray' } onClick={() => setLimiter(limiter - 1)}>
+                    {"<"} Previous
+                </Button>
+                <p className='second-font-color'> Page {limiter} of {SIZE / ROW_NUM} </p>
+                <Button className={ limiter >= (SIZE / ROW_NUM) ? "invisible disabled" : 'transparent border-gray-hover-gray' } onClick={() => setLimiter(limiter + 1)}>
+                    Next {">"} 
+                </Button>
             </Modal.Footer>
         </Modal>
+
     </>)
 }
 

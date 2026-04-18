@@ -6,7 +6,7 @@ export function useGenerate() {
 
   const generate = (size) => {
     // Send worker
-    workerRef.current.postMessage({type: 'GENERATE', payload: {size}})
+    workerRef.current.postMessage({ type: 'GENERATE', payload: {size} })
     sessionStorage.setItem("size",size)
   }
 

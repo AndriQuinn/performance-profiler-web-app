@@ -91,11 +91,13 @@
   border: 1px solid var(--gray-border) !important;
   border-radius: 8px !important;
   padding: 0rem 3rem !important;
-  transition: border 0.3s ease, color 0.3s ease !important; 
+  transition: border 0.3s ease, 
+              background-color 0.3s ease !important;
 }
 
 .button-default:hover {
   border: 1px solid #0d6efd !important;
+  background-color: var(--blue) !important;
 }
 
 .yellow-bg {

@@ -71,7 +71,7 @@ const InstructionSection = () => {
                     <li> Upload your own dataset (CSV or JSON) </li>
                     <li> Generate a sample dataset automatically </li>
                 </ul>
-                {/* <p> Each dataset record should contain the following fields: <b> SKU, Name, Category, Price, Stock </b> </p> */}
+                <p> Each dataset record should contain the following fields: <b> SKU, Name, Category, Price, Stock </b> </p>
                 <p> Recommended dataset sizes: </p>
                 <ul>
                     <li> <b> 1,000 records </b> (small test) </li>
@@ -143,14 +143,12 @@ const ImportDatasetSection = () => {
     )
 }
 
-const SampleDataSection = ( {
-    navigate,
-} ) => {
+const SampleDataSection = ({ navigate }) => {
     const { datasetArr, generate } = useGenerate() // Data context
-    const [loading, setLoading] = useState(null); // Loading state
+    const [isLoading, setLoading] = useState(null); // Loading state
 
     // Generate data handler
-    const handleGenerateDate = (size) => {
+    const handleGenerateData = (size) => {
         setLoading(size)
         generate(size)
     }
@@ -173,85 +171,61 @@ const SampleDataSection = ( {
                         <p className='my-2 second-font-color'> Quickly generate synthetic e-commerce data for testing </p>
                     </div>
                     <div  className='d-flex flex-column flex-lg-row justify-content-between align-items-center my-3'>
-
-                        {/* Generate Data Buttons */}
-                        <Button disabled={loading !== null} className='d-flex justify-content-center button-default' onClick={ () => handleGenerateDate(1e3) }>
-                            {loading === 1e3 ? (
-                                <div className='py-4 d-flex flex-column justify-content-center align-items-center px-5'>
-                                    <Spinner
-                                    as="span"
-                                    animation="border"
-                                    size="sm"
-                                    role="status"
-                                    aria-hidden="true"
-                                />
-                            </div>)
-                             : (
-                                <div className='py-3 d-flex flex-column justify-content-center align-items-center px-5'>
-                                    <h4 className='mb-2'>1k </h4>
-                                    <p className='my-0 second-font-color'> Records </p>
-                                </div>    
-                             )}
-                        </Button>
-                        <Button disabled={loading !== null} className='d-flex justify-content-center button-default' onClick={ () => handleGenerateDate(1e4) }>
-                            {loading === 1e4 ? (
-                                <div className='py-4 d-flex flex-column justify-content-center align-items-center px-5'>
-                                    <Spinner
-                                    as="span"
-                                    animation="border"
-                                    size="sm"
-                                    role="status"
-                                    aria-hidden="true"
-                                />
-                            </div>)
-                             : (
-                                <div className='py-3 d-flex flex-column justify-content-center align-items-center px-5'>
-                                    <h4 className='mb-2'> 10k </h4>
-                                    <p className='my-0 second-font-color'> Records </p>
-                                </div>    
-                             )}
-                        </Button>
-                        <Button disabled={loading !== null} className='d-flex justify-content-center button-default' onClick={ () => handleGenerateDate(1e5) }>
-                            {loading === 1e5? (
-                                <div className='py-4 d-flex flex-column justify-content-center align-items-center px-5'>
-                                    <Spinner
-                                    as="span"
-                                    animation="border"
-                                    size="sm"
-                                    role="status"
-                                    aria-hidden="true"
-                                />
-                            </div>)
-                             : (
-                                <div className='py-3 d-flex flex-column justify-content-center align-items-center px-5'>
-                                    <h4 className='mb-2'>100k </h4>
-                                    <p className='my-0 second-font-color'> Records </p>
-                                </div>    
-                             )}
-                        </Button>
-                        <Button disabled={loading !== null} className='d-flex justify-content-center button-default' onClick={ () => handleGenerateDate(1e6) }>
-                             {loading === 1e6? (
-                                <div className='py-4 d-flex flex-column justify-content-center align-items-center px-5'>
-                                    <Spinner
-                                    as="span"
-                                    animation="border"
-                                    size="sm"
-                                    role="status"
-                                    aria-hidden="true"
-                                />
-                            </div>)
-                             : (
-                                <div className='py-3 d-flex flex-column justify-content-center align-items-center px-5'>
-                                    <h4 className='mb-2'>1M </h4>
-                                    <p className='my-0 second-font-color'> Records </p>
-                                </div>    
-                             )}
-                        </Button>
+                        <GenerateDataButton
+                            label={"1K"}
+                            handleGenerateData={handleGenerateData}
+                            size={1e3}
+                            isLoading={isLoading}
+                        />
+                        <GenerateDataButton
+                            label={"10K"}
+                            handleGenerateData={handleGenerateData}
+                            size={1e4}
+                            isLoading={isLoading}
+                        />
+                        <GenerateDataButton
+                            label={"100K"}
+                            handleGenerateData={handleGenerateData}
+                            size={1e5}
+                            isLoading={isLoading}
+                        />
+                        <GenerateDataButton
+                            label={"1M"}
+                            handleGenerateData={handleGenerateData}
+                            size={1e6}
+                            isLoading={isLoading}
+                        />
                     </div>
                 </div>
             </Container>
         </>
     )
+}
+
+const GenerateDataButton = ({ label, handleGenerateData, size, isLoading }) => {
+    return(<>
+        <Button disabled={isLoading !== null} className='d-flex justify-content-center button-default' onClick={ () => handleGenerateData(size) }>
+            {isLoading === size? 
+            (
+                <div className='py-4 d-flex flex-column justify-content-center align-items-center px-5'>
+                    <Spinner
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                />
+                </div>
+            )
+            : (
+                <div className='py-3 d-flex flex-column justify-content-center align-items-center px-5'>
+                    <h4 className='mb-2'>{label} </h4>
+                    <p className='my-0 second-font-color'> Records </p>
+                </div>    
+                )}
+        </Button>
+    
+    </>)
 }
 
 export default Home

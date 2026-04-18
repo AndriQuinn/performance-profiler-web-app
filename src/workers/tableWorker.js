@@ -13,21 +13,19 @@ self.onmessage = (e) => {
 
     switch(type) {
         case 'GENERATE_TABLE':            
-            const { datasetArr } = payload // Extract the datasetArr
-            uniformTable = generateTable(datasetArr.uniformArr)
+            const { datasetArr } = payload // Extract the key from the arr
+            uniformTable = generateTable(datasetArr.uniformArr)  
             nonUniformTable = generateTable(datasetArr.nonUniformArr)
             break
 
         case 'GET_TABLE':
-            const { limiter } = payload // Extract the datasetArr
-            const newUniformTable = uniformTable.slice((limiter*ROW_NUM)-OFFSET,limiter * ROW_NUM)
-            const newNonUniformTable = nonUniformTable.slice((limiter*ROW_NUM)-OFFSET,limiter * ROW_NUM)
+            const { limiter } = payload
             const newDatasetTable = {
-                uniformTable: newUniformTable,
-                nonUniformTable: newNonUniformTable
+                uniformTable: uniformTable.slice((limiter*ROW_NUM)-OFFSET,limiter * ROW_NUM),
+                nonUniformTable: nonUniformTable.slice((limiter*ROW_NUM)-OFFSET,limiter * ROW_NUM)
             }
-
-            self.postMessage({ type: 'NEW_TABLE',  newDatasetTable }) // Return the new table
+            
+            self.postMessage({ type: 'NEW_TABLE',  newDatasetTable })        
             break
     }
 }

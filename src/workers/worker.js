@@ -1,7 +1,7 @@
 // Gets the data
-import { performBenchmark } from "./performBenchmark";
-import { generateUniformData, generateNonUniformData, generateTable } from "./generateData";
-import { interpolationBinarySearch, interpolationFibonacciSearch, interpolationExponentialSearch } from "./search-algo";
+import { performBenchmark } from "../utils/performBenchmark";
+import { generateUniformData, generateNonUniformData, generateTable } from "../utils/generateData";
+import { interpolationBinarySearch, interpolationFibonacciSearch, interpolationExponentialSearch } from "../utils/search-algo";
 
 let newDatasetArr = {}
 
@@ -11,6 +11,7 @@ self.onmessage = (e) => {
   const { type, payload } = e.data
   
   switch(type) {
+
     // Generate syntetic data
     case 'GENERATE':
       newDatasetArr = generateDataArr(payload.size)
@@ -61,6 +62,7 @@ self.onmessage = (e) => {
   }
 }
 
+// Generate data for both uniform and nonUniform data
 const generateDataArr = (size) => {
   let uniformArr = generateUniformData(size)
   let nonUniformArr = generateNonUniformData(size)

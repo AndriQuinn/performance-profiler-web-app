@@ -12,46 +12,41 @@ import { useNavigate } from "react-router-dom";
 
 const ViewResults = () => {
 
-    return (
-        <>
-            <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center gray-bg p-1 p-md-2 p-lg-3 p-xl-5">
-                <Header/>
-                <Container fluid className="white-bg p-4 p-md-5 my-3 ">
-                    <Pages/>
-                    <Body/>
-                </Container>
-            </Container>    
-            
-        </>
-    )
+    return (<>
+        <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center gray-bg p-1 p-md-2 p-lg-3 p-xl-5">
+            <Header/>
+            <Container fluid className="white-bg p-4 p-md-5 my-3 ">
+                <Pages/>
+                <Body/>
+            </Container>
+        </Container>    
+    </>)
 }
 
 const Pages = () => {
-    return (
-        <>
-            <div className='d-flex flex-column flex-lg-row justify-content-between px-5'>
-                <div className='d-flex flex-row align-items-center justify-content-center my-2 my-lg-0'>
-                    <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
-                        1
-                    </Button>
-                    Import Dataset 
-                </div>
-                
-                <div className='d-flex flex-row align-items-center justify-content-center my-2 my-lg-0'>
-                    <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
-                        2
-                    </Button>
-                    Run Benchmarks
-                </div>
-                <div className='d-flex flex-row align-items-center justify-content-center my-2 my-lg-0'>
-                    <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
-                        3
-                    </Button>
-                    View Results
-                </div>
+    return (<>
+        <div className='d-flex flex-column flex-lg-row justify-content-between px-5'>
+            <div className='d-flex flex-row align-items-center justify-content-center my-2 my-lg-0'>
+                <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
+                    1
+                </Button>
+                Import Dataset 
             </div>
-        </>
-    )
+                
+            <div className='d-flex flex-row align-items-center justify-content-center my-2 my-lg-0'>
+                <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
+                    2
+                </Button>
+                Run Benchmarks
+            </div>
+            <div className='d-flex flex-row align-items-center justify-content-center my-2 my-lg-0'>
+                <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
+                    3
+                </Button>
+                View Results
+            </div>
+        </div>
+    </>)
 }
 
 const Body = () => {
@@ -79,7 +74,7 @@ const Body = () => {
             <ImplementationUsed/>
             <BenchmarkAnalysis/>
             <GraphPanels/>
-            <SubmitResultSection/>
+            <DownloadResultSection/>
 
         </Container>
     </>)    
@@ -168,7 +163,7 @@ const GraphPanels = () => {
 
     const { benchmarkResult } = useData()
 
-    // x value for graph 1..50
+    // -- Graph Points --
     const x = []
     for (var i = 0; i < 50; i++) {
         x.push(i+1) 
@@ -216,7 +211,7 @@ const GraphPanels = () => {
     </>)
 }
 
-const SubmitResultSection = () => {
+const DownloadResultSection = () => {
     return (<>
         <Container fluid className='my-3 px-0'>
             <div className='p-4 border-gray d-flex flex-column justify-content-start w-100 gray-bg'>
