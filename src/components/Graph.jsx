@@ -1,62 +1,24 @@
 import '../App.css'
 import { useRef, useEffect } from 'react';
-import uPlot from "uplot";
-import "uplot/dist/uPlot.min.css";
+import {LineChart,AreaChart,ComposedChart,Line,Area,XAxis,YAxis,CartesianGrid,Tooltip,Legend,ResponsiveContainer,ReferenceLine,ReferenceArea,} from 'recharts'
 
 export default function Graph( {
     data
-} ) {
-    const chartRef = useRef(null);   // Html reference
-    const chartInstance = useRef(null);   // Chart instance reference
-    
-    useEffect(() => {
-        if (chartRef.current && !chartInstance.current) {
-            // Configurations
-            const opts = {
-                width: chartRef.current.offsetWidth,   
-                height: 400,
-                scales: {
-                    x: { time: false }  // Time Stamp Off
-                },
-                series: [
-                {
-                    label: "Batch" 
-                },
-                {
-                    label: "Interpolation",
-                    stroke: "red",
-                    width: 2,
-                    value: (self, rawValue) => rawValue === null ? '--' : rawValue.toExponential(2) + ' ms' // Uses exponential notation
-                },
-                {
-                    label: sessionStorage.getItem("selectedAlgo"),
-                    stroke: "blue",
-                    width: 2,
-                    value: (self, rawValue) => rawValue === null ? '--' : rawValue.toExponential(2) + ' ms' // Uses exponential notation
-                }
-                ],
-                axes: [{
-                    show: true,      
-                    grid: { show: true },
-                    values: () => [],
-                }, {}],
-            };
-    
-            chartInstance.current = new uPlot(opts, data, chartRef.current); 
-        }
-    
-        return () => {
-            if (chartInstance.current) {
-                chartInstance.current.destroy();
-                chartInstance.current = null;
-            }
-        };
-
-    }, []);
-    
+} ) {   
     return (<>
-        <div ref={chartRef} > {/* Render graph container */}
-    
-        </div>            
+
+        <ResponsiveContainer width="100%" height={300}>
+        <LineChart data={data} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="x" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line dataKey="interpolationBinary" stroke="#4A90D9" strokeWidth={2} type="monotone" dot={false} />
+            <Line dataKey="interpolationFibonacci" stroke="#52c48a" strokeWidth={2} type="monotone" dot={false} />
+            <Line dataKey="interpolationExponential" stroke="#52348a" strokeWidth={2} type="monotone" dot={false} />
+        </LineChart>
+        </ResponsiveContainer>
+
     </>)
 }

@@ -31,31 +31,9 @@ self.onmessage = (e) => {
       let newMetrics = null
       if (!newDatasetArr) return;
 
-      switch(payload.hybridSearch) {
-        case 'Interpolation-Binary': {
-          const { result, metrics } = performBenchmark(payload.attempts, interpolationBinarySearch, newDatasetArr);
-          newResult = result
-          newMetrics = metrics
-          break
-        }
-
-        case 'Interpolation-Fibonacci': {
-          const { result,  metrics} = performBenchmark(payload.attempts, interpolationFibonacciSearch, newDatasetArr);
-          newResult = result
-          newMetrics = metrics
-          break
-        }
-
-        case 'Interpolation-Exponential':{
-          const { result, metrics } = performBenchmark(payload.attempts, interpolationExponentialSearch, newDatasetArr);
-          newResult = result
-          newMetrics = metrics
-          break
-        }
-
-        default:
-          console.log('Algorithm not found')
-      }
+      const { result, metrics } = performBenchmark(payload.attempts, newDatasetArr);
+      newResult = result
+      newMetrics = metrics
 
       self.postMessage({ type: 'BENCHMARK_RESULT', newResult, newMetrics }); // Return the results
       break;

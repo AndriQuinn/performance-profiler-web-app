@@ -26,8 +26,8 @@ export function DataProvider({ children }) {
 
             if (type === 'GENERATED') setDatasetArr(newDatasetArr);
             if (type === 'BENCHMARK_RESULT') {
-            setBenchmarkResult(newResult)};
-            setMetrics(newMetrics)
+              setBenchmarkResult(newResult)};
+              setMetrics(newMetrics)
             }
         
         // -- Table Worker Receiver -- 
