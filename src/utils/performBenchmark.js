@@ -1,29 +1,35 @@
 import { interpolationSearch } from "./search-algo"
 import { getRandomInt } from "./getRandomInt"
+import { interpolationBinarySearch, interpolationFibonacciSearch, interpolationExponentialSearch } from "../utils/search-algo";
 
-export const performBenchmark = (attempts, hybridSearch, dataset ) => {
+export const performBenchmark = (attempts, dataset ) => {
 
     //  --- Config ---
-    const DOWNSAMPLE_RATE = 50
+    const DOWNSAMPLE_RATE = 30
     let plotPoints = Math.floor(attempts / DOWNSAMPLE_RATE)  // For noise handling, attempts has minumum of 10k hence the lowest range is 200 to handle noise
-    const NUM_SERIES = 4 // Interpolation - Uniform / Non Uniform - Hybrid - Uniform / Non Uniform
+    const NUM_SERIES = 6 // Interpolation - Uniform / Non Uniform - Hybrid - Uniform / Non Uniform
+    const algorithms = [
+      { key: 'interpolationBinary',      fn: interpolationBinarySearch },
+      { key: 'interpolationFibonacci',   fn: interpolationFibonacciSearch },
+      { key: 'interpolationExponential', fn: interpolationExponentialSearch }
+    ]
 
-    // --- State --- 
-    
+    // --- State ---     
     // Incrementation for multiplying the plotPoints when attempts reached plotPoints 
     // eg. i >= plotPoints * counter => increment counter for the next threshold 
     let counter = 1 
+    let total = []
+    let max = Infinity
 
     // Noise Handlers 
-    const noiseHandlers = {
-      interpolation: {uniform: 0, nonUniform: 0 },
-      hybridSearch: {uniform: 0, nonUniform: 0 }
-    }
+    const noiseHandlers = Object.fromEntries(
+      algorithms.map(({ key }) => [key, { uniform: 0, nonUniform: 0 }])
+    )
 
     // --- Results ---
     const result = {
-      interpolation: { uniform: [], nonUniform: [] },
-      hybridSearch: { uniform: [], nonUniform: [] }
+      uniform: { executionTime: [] },
+      nonUniform: { executionTime: [] }
     }
 
     const metrics = {
@@ -36,44 +42,45 @@ export const performBenchmark = (attempts, hybridSearch, dataset ) => {
     for (let i = 0; i <= attempts; i++) {
       const target = getRandomInt(0,dataset.uniformArr.length) // Same target for both algorithms    
 
-      // Baseline (Interpolation)
-      recordExecutionTime(target, dataset.uniformArr, noiseHandlers.interpolation, "uniform", interpolationSearch)
-      recordExecutionTime(target, dataset.nonUniformArr, noiseHandlers.interpolation, "nonUniform", interpolationSearch)
-
-      // Baseline (Hybrid)
-      recordExecutionTime(target, dataset.uniformArr, noiseHandlers.hybridSearch, "uniform", hybridSearch)
-      recordExecutionTime(target, dataset.nonUniformArr, noiseHandlers.hybridSearch, "nonUniform", hybridSearch)
+      for (const { key, fn } of algorithms) {
+        recordExecutionTime(target, dataset.uniformArr, noiseHandlers[key], "uniform", fn)
+        recordExecutionTime(target, dataset.nonUniformArr, noiseHandlers[key], "nonUniform", fn)
+      }
 
       // Handle noise / Down Sampling when iteration reached plotPoints
       if (i >= plotPoints * counter ) {
-        recordDownSampling(result.interpolation, plotPoints, noiseHandlers.interpolation, metrics)
-        recordDownSampling(result.hybridSearch, plotPoints, noiseHandlers.hybridSearch, metrics)
+        recordDownSampling(result, plotPoints, noiseHandlers, metrics,counter,algorithms)
         counter += 1
       }
     } 
 
-    metrics.totalExecutionTime = 
-      sumArray(result.interpolation.uniform) +
-      sumArray(result.interpolation.nonUniform) +
-      sumArray(result.hybridSearch.uniform) +
-      sumArray(result.hybridSearch.nonUniform) 
-    
     metrics.averageTime = metrics.totalExecutionTime / NUM_SERIES
 
     return { result, metrics }
 }
 
-const recordDownSampling = (result,plotPoints, noiseHandler, metrics) => {
-  // Record the final time after handling the noise
-  result.uniform.push(noiseHandler.uniform / plotPoints) 
-  result.nonUniform.push(noiseHandler.nonUniform / plotPoints)
+const recordDownSampling = (result,plotPoints, noiseHandler, metrics,counter, algorithms) => {
+// build point dynamically from algorithms array
+  const uniformPoint = { x: counter }
+  const nonUniformPoint = { x: counter }
+  const allValues = []
 
-  // Set fastest execution time after noise handling
-  metrics.fastestOperation = Math.min(metrics.fastestOperation, noiseHandler.uniform / plotPoints, noiseHandler.nonUniform / plotPoints)
-  
-  // Reset noise handler
-  noiseHandler.uniform = 0 
-  noiseHandler.nonUniform = 0 
+  for (const { key } of algorithms) {
+    uniformPoint[key] = noiseHandler[key].uniform / plotPoints
+    nonUniformPoint[key] = noiseHandler[key].nonUniform / plotPoints
+
+    allValues.push(uniformPoint[key], nonUniformPoint[key])
+
+    // reset
+    noiseHandler[key].uniform = 0
+    noiseHandler[key].nonUniform = 0
+  }
+
+  result.uniform.executionTime.push(uniformPoint)
+  result.nonUniform.executionTime.push(nonUniformPoint)
+
+  metrics.fastestOperation = Math.min(metrics.fastestOperation, ...allValues)
+  metrics.totalExecutionTime = sumArray(allValues)
 }
 
 const recordExecutionTime = (target, arr, noiseHandler, noiseHandlerKey, search) => {

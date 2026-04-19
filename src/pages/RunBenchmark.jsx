@@ -12,8 +12,7 @@ import { useGenerateTable } from '../hooks/useGenerateTable';
 const RunBenchamark = () => {
 
     // -- State --
-    const [attempts,setAttempts] = useState(1e4) // Default Search Attempts
-    const [selectedAlgo,setSelectedAlgo] = useState("Interpolation-Binary") // Selected algorithm state
+    const [attempts,setAttempts] = useState(1e4) // Default Search Attempts 10k
 
     return (
         <>
@@ -22,8 +21,6 @@ const RunBenchamark = () => {
                 <Container fluid className="white-bg p-4 p-md-5 my-3 ">
                     <Pages/>
                     <ExecuteBenchmarkSection 
-                        selectedAlgo={selectedAlgo}
-                        setSelectedAlgo={setSelectedAlgo}
                         attempts={attempts}
                         setAttempts={setAttempts}
                     />
@@ -96,8 +93,7 @@ const ExecuteBenchmarkSection = ({
 }
 
 const StartBenchmarkSection = ({
-    selectedAlgo,
-    attempts,
+    attempts
 }) => {
 
     // -- Use Data --
@@ -113,9 +109,9 @@ const StartBenchmarkSection = ({
     const [limiter, setLimiter] = useState(1)
 
     // Handler
-    const benchmarkHandler = ( attempts,hybridSearch ) => {
+    const benchmarkHandler = ( attempts ) => {
         setLoading(true)
-        runBenchmark(attempts, hybridSearch)
+        runBenchmark(attempts)
     }
 
     // -- Side Effects -- 
@@ -179,7 +175,7 @@ const StartBenchmarkSection = ({
                 <DatasetModal show={isShow} setShow={setShow} dataset={datasetTable} limiter={limiter} setLimiter={setLimiter} />
                 
                 {/* Start Benchmarking Button */}
-                <Button className='d-flex flex-row justify-content-center align-items-center  black-button my-0' onClick={() => benchmarkHandler(attempts,selectedAlgo)}>
+                <Button className='d-flex flex-row justify-content-center align-items-center  black-button my-0' onClick={() => benchmarkHandler(attempts)}>
                     {isloading ? (
                         <div>
                             <Spinner
@@ -205,8 +201,6 @@ const StartBenchmarkSection = ({
 }
 
 const ImplmentationSection = ( {
-    selectedAlgo,
-    setSelectedAlgo,
     attempts,
     setAttempts
 } ) => {
@@ -238,21 +232,6 @@ const ImplmentationSection = ( {
                 imagePath={"information-muted.svg"}
                 size={25}
             />      
-            
-            {/* Algorithm Picker */}
-            <div className='my-1 d-flex flex-column' >
-                <p className='second-font-color'> Implementation </p>
-                <Dropdown className='my-0 w-100 gray-bg-2'>
-                    <Dropdown.Toggle className='w-100 gray-bg-2' variant="secondary" id="dropdown-basic">
-                        {selectedAlgo}
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu className='w-100 gray-bg-2'>
-                        <Dropdown.Item onClick={() => setSelectedAlgo("Interpolation-Binary")}>Interpolation-Binary</Dropdown.Item>
-                        <Dropdown.Item onClick={() => setSelectedAlgo("Interpolation-Fibonacci")}>Interpolation-Fibonacci</Dropdown.Item>
-                        <Dropdown.Item onClick={() => setSelectedAlgo("Interpolation-Exponential")}>Interpolation-Exponential</Dropdown.Item>
-                    </Dropdown.Menu>
-                </Dropdown>
-            </div>
 
             <div className='mt-3'>
                 <div className='d-flex flex-row justify-content-start'>
@@ -284,7 +263,6 @@ const ImplmentationSection = ( {
                             <p className='text-danger my-0'> Cannot go below 10,000 </p> 
                     : <p className='my-0 invisible'> {"Hi? Youre not suppose to see me actually :)"} </p>
                 }
-                    
             </div>    
         </div>
     </>)

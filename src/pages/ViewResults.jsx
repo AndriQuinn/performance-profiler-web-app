@@ -2,13 +2,11 @@ import '../App.css'
 import { Container, Button, Row, Col } from "react-bootstrap";
 import Header from '../components/Header';
 import { Link } from "react-router-dom";
-import "uplot/dist/uPlot.min.css";
 import Header2 from '../components/Header2';
 import Graph from '../components/Graph';
 import { downloadFromSessionStorage } from '../utils/downloadResult';
 import { useData } from '../hooks/useData';
 import { useNavigate } from "react-router-dom";
-
 
 const ViewResults = () => {
 
@@ -163,24 +161,6 @@ const GraphPanels = () => {
 
     const { benchmarkResult } = useData()
 
-    // -- Graph Points --
-    const x = []
-    for (var i = 0; i < 50; i++) {
-        x.push(i+1) 
-    }
-    
-    const uniformPoints = [
-        x,
-        benchmarkResult.interpolation.uniform,
-        benchmarkResult.hybridSearch.uniform
-    ]
-
-    const nonUniformPoints = [
-        x,
-        benchmarkResult.interpolation.nonUniform,
-        benchmarkResult.hybridSearch.nonUniform,
-    ]
-
     return (<>
         <Container fluid className='my-3'>
             <Row className='d-flex justify-content-between'>
@@ -193,7 +173,7 @@ const GraphPanels = () => {
                         size={20}
                     />
                     <p className='my-2 second-font-color'> Time taken for each operation in miliseconds </p>
-                    <Graph data={uniformPoints}/>
+                    <Graph data={benchmarkResult.uniform.executionTime}/>
                 </Col>
 
                 {/* Non-Uniform graph */}
@@ -204,7 +184,7 @@ const GraphPanels = () => {
                         size={20}
                     />
                     <p className='my-2 second-font-color'> Time taken for each operation in miliseconds </p>
-                    <Graph data={nonUniformPoints}/>
+                    <Graph data={benchmarkResult.nonUniform.executionTime}/>
                 </Col>
             </Row>
         </Container>
