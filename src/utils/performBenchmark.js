@@ -2,10 +2,12 @@ import { interpolationSearch } from "./search-algo"
 import { getRandomInt } from "./getRandomInt"
 import { interpolationBinarySearch, interpolationFibonacciSearch, interpolationExponentialSearch } from "../utils/search-algo";
 
-export const performBenchmark = (attempts, dataset ) => {
+export const performBenchmark =  (attempts, dataset ) => {
 
     //  --- Config ---
     const DOWNSAMPLE_RATE = 30
+    const TO_NANOSECONDS = 1e6
+    const TO_MEGABYTE = 1e6
     let plotPoints = Math.floor(attempts / DOWNSAMPLE_RATE)  // For noise handling, attempts has minumum of 10k hence the lowest range is 200 to handle noise
     const NUM_SERIES = 6 // Interpolation - Uniform / Non Uniform - Hybrid - Uniform / Non Uniform
     const algorithms = [
@@ -18,23 +20,24 @@ export const performBenchmark = (attempts, dataset ) => {
     // Incrementation for multiplying the plotPoints when attempts reached plotPoints 
     // eg. i >= plotPoints * counter => increment counter for the next threshold 
     let counter = 1 
-    let total = []
-    let max = Infinity
 
     // Noise Handlers 
     const noiseHandlers = Object.fromEntries(
-      algorithms.map(({ key }) => [key, { uniform: 0, nonUniform: 0 }])
+      algorithms.map(({ key }) => [key, {
+         uniform: { time: 0, memory: 0 }, 
+         nonUniform: { time: 0, memory: 0 }
+    }])
     )
 
     // --- Results ---
     const result = {
-      uniform: { executionTime: [] },
-      nonUniform: { executionTime: [] }
+      uniform: { executionTime: [], memoryUsage: [] },
+      nonUniform: { executionTime: [], memoryUsage: [] }
     }
 
     const metrics = {
-      totalExecutionTime: Infinity,
-      averageTime: Infinity,
+      totalExecutionTime: 0,
+      averageTime: 0,
       fastestOperation: Infinity
     }
 
@@ -49,46 +52,64 @@ export const performBenchmark = (attempts, dataset ) => {
 
       // Handle noise / Down Sampling when iteration reached plotPoints
       if (i >= plotPoints * counter ) {
-        recordDownSampling(result, plotPoints, noiseHandlers, metrics,counter,algorithms)
+        recordDownSampling(result, plotPoints, noiseHandlers, metrics,counter,algorithms, TO_NANOSECONDS, TO_MEGABYTE)
         counter += 1
       }
     } 
 
-    metrics.averageTime = metrics.totalExecutionTime / NUM_SERIES
+    metrics.averageTime = metrics.totalExecutionTime / 6
 
+    console.log("Result Memory? ", result.uniform.memoryUsage)
+    
     return { result, metrics }
 }
 
-const recordDownSampling = (result,plotPoints, noiseHandler, metrics,counter, algorithms) => {
+const recordDownSampling = (result,plotPoints, noiseHandler, metrics,counter, algorithms, TO_NANOSECONDS, TO_MEGABYTE) => {
 // build point dynamically from algorithms array
-  const uniformPoint = { x: counter }
-  const nonUniformPoint = { x: counter }
+  const uniformTimePoint = { x: counter }
+  const nonUniformTimePoint = { x: counter }
+  const uniformMemPoint = { x: counter }
+  const nonUniformMemPoint = { x: counter }
+
   const allValues = []
 
   for (const { key } of algorithms) {
-    uniformPoint[key] = noiseHandler[key].uniform / plotPoints
-    nonUniformPoint[key] = noiseHandler[key].nonUniform / plotPoints
+    uniformTimePoint[key] = ((noiseHandler[key].uniform.time / plotPoints) * TO_NANOSECONDS)
+    nonUniformTimePoint[key] = ((noiseHandler[key].nonUniform.time / plotPoints) * TO_NANOSECONDS)
 
-    allValues.push(uniformPoint[key], nonUniformPoint[key])
+    uniformMemPoint[key] = ((noiseHandler[key].uniform.memory / plotPoints) / TO_MEGABYTE)
+    nonUniformMemPoint[key] = ((noiseHandler[key].nonUniform.memory / plotPoints) / TO_MEGABYTE)
+
+    allValues.push(uniformTimePoint[key], nonUniformTimePoint[key])
 
     // reset
-    noiseHandler[key].uniform = 0
-    noiseHandler[key].nonUniform = 0
+    noiseHandler[key].uniform.time = 0
+    noiseHandler[key].nonUniform.time = 0
+    noiseHandler[key].uniform.memory = 0
+    noiseHandler[key].nonUniform.memory = 0
   }
 
-  result.uniform.executionTime.push(uniformPoint)
-  result.nonUniform.executionTime.push(nonUniformPoint)
+  result.uniform.executionTime.push(uniformTimePoint)
+  result.nonUniform.executionTime.push(nonUniformTimePoint)
+  result.uniform.memoryUsage.push(uniformMemPoint)
+  result.nonUniform.memoryUsage.push(nonUniformMemPoint)
 
   metrics.fastestOperation = Math.min(metrics.fastestOperation, ...allValues)
-  metrics.totalExecutionTime = sumArray(allValues)
+  metrics.totalExecutionTime += sumArray(allValues)
 }
 
 const recordExecutionTime = (target, arr, noiseHandler, noiseHandlerKey, search) => {
+  const memBefore = performance.memory?.usedJSHeapSize ?? 0
+  
   // Test
   let start = performance.now()
   search(arr,target)
   let end = performance.now()
-  noiseHandler[noiseHandlerKey] += (end - start)
+  
+
+  const memAfter = performance.memory?.usedJSHeapSize ?? 0
+  noiseHandler[noiseHandlerKey].time += (end - start)
+  noiseHandler[noiseHandlerKey].memory += memAfter - memBefore
 }
 
 const sumArray = (arr) => arr.reduce((acc, val) => acc + val, 0)

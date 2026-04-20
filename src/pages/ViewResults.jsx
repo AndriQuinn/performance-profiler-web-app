@@ -9,7 +9,8 @@ import { useData } from '../hooks/useData';
 import { useNavigate } from "react-router-dom";
 
 const ViewResults = () => {
-
+    const memBefore = performance.memory?.usedJSHeapSize ?? 0
+    console.log(memBefore)
     return (<>
         <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center gray-bg p-1 p-md-2 p-lg-3 p-xl-5">
             <Header/>
@@ -90,9 +91,9 @@ const MetricsPanel = () => {
                 <Col className='my-2 p-4 border-gray me-3'>
                     <p className='second-font-color' style={{fontWeight: "500"}}> Total Execution Time </p>
                     <div className='d-flex justify-content-start align-items-center'>
-                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> {metrics.totalExecutionTime.toExponential(2)} </h4>
+                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> {(metrics.totalExecutionTime).toFixed(2)} </h4>
                         
-                        <p className='second-font-color my-0'> ms </p>
+                        <p className='second-font-color my-0'> ns </p>
                     </div>
                 </Col>
 
@@ -100,8 +101,8 @@ const MetricsPanel = () => {
                 <Col className='my-2 p-4 border-gray me-3'>
                     <p className='second-font-color ' style={{fontWeight: "500"}}> Average Time </p>
                     <div className='d-flex justify-content-start align-items-center'>
-                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> {metrics.averageTime.toExponential(2)} </h4>
-                        <p className='second-font-color my-0'> ms </p>
+                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> {(metrics.averageTime).toFixed(2)} </h4>
+                        <p className='second-font-color my-0'> ns </p>
                     </div>
                 </Col>
 
@@ -116,8 +117,8 @@ const MetricsPanel = () => {
                         <div className=' darkgreen-bg me-2 '>
                             <p className='my-0' style={{fontSize: "8"}}> SEARCH </p>
                         </div>
-                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> {metrics.fastestOperation.toExponential(2)} </h4>
-                        <p className='second-font-color my-0'> ms </p>
+                        <h4 className='my-0 me-2' style={{fontWeight: "700"}}> {(metrics.fastestOperation).toFixed(2)} </h4>
+                        <p className='second-font-color my-0'> ns </p>
                     </div>
                 </Col>
             </Row>
@@ -130,7 +131,7 @@ const ImplementationUsed = () => {
     return (<>
         <Container fluid  className='w-100 px-0'>
             <div className='border-blue blue-bg px-3 py-2 my-4'>
-                <p className='m-0' style={{color: "blue"}}> <b> Implementation Used: </b> {sessionStorage.getItem("selectedAlgo")} </p>
+                <p className='m-0' style={{color: "blue"}}> <b> Algorithm Used: Interpolation-Binary, Interpolation-Fibonacci, Interpolation-Exponential </b>  </p>
             </div>
         </Container>
     </>)
@@ -162,31 +163,78 @@ const GraphPanels = () => {
     const { benchmarkResult } = useData()
 
     return (<>
-        <Container fluid className='my-3'>
-            <Row className='d-flex justify-content-between'>
+        <Container fluid className='my-3 px-0 px-lg-3'>
+            <Row className='g-0 gx-lg-4 border-gray p-3 my-4'>
+                <Header2
+                    headerText={"Execution Time Progression"}
+                    imagePath={"/chart.svg"}
+                    size={20}
+                />
+                <p className='my-2 second-font-color'> Time taken for each operation in nanoseconds </p>
 
                 {/* Uniform graph */}
-                <Col sm={12} className='my-2 p-4 border-gray '>
-                    <Header2
-                        headerText={"Execution Time Comparison (Uniform)"}
-                        imagePath={"/chart.svg"}
-                        size={20}
-                    />
-                    <p className='my-2 second-font-color'> Time taken for each operation in miliseconds </p>
-                    <Graph data={benchmarkResult.uniform.executionTime}/>
+                <Col className='ps-lg-0' sm={12} lg={6}>
+                    <div className='my-2 p-4 border-gray '>
+                        <Header2
+                            headerText={"Uniform Distribution"}
+                            imagePath={"/chart.svg"}
+                            size={20}
+                        />
+                        <p className='my-2 second-font-color'> Execution time per operation batch {"(ns)"} </p>
+                        <Graph data={benchmarkResult.uniform.executionTime}/>
+                    </div>
                 </Col>
 
                 {/* Non-Uniform graph */}
-                <Col sm={12} className='my-2 p-4 border-gray '>
-                    <Header2
-                        headerText={"Execution Time Comparison (Non - Uniform)"}
-                        imagePath={"/chart.svg"}
-                        size={20}
-                    />
-                    <p className='my-2 second-font-color'> Time taken for each operation in miliseconds </p>
-                    <Graph data={benchmarkResult.nonUniform.executionTime}/>
+                <Col className='pe-lg-0' sm={12} lg={6}>
+                    <div className='my-2 p-4 border-gray '>
+                        <Header2
+                            headerText={"Non - Uniform Distribution"}
+                            imagePath={"/chart.svg"}
+                            size={20}
+                        />
+                        <p className='my-2 second-font-color'> Execution time per operation batch {"(ns)"} </p>
+                        <Graph data={benchmarkResult.nonUniform.executionTime}/>
+                    </div>
                 </Col>
             </Row>
+
+            <Row className='g-0 gx-lg-4 border-gray p-3 my-4'>
+                <Header2
+                    headerText={"Memory Usage Analysis"}
+                    imagePath={"/chart.svg"}
+                    size={20}
+                />
+                <p className='my-2 second-font-color'> Memory consumption across search operation batches (MB) </p>
+
+                
+                <Col className='ps-lg-0' sm={12} lg={6}>
+                    <div className='my-2 p-4 border-gray '>
+                        <Header2
+                            headerText={"Uniform Distribution"}
+                            imagePath={"/chart.svg"}
+                            size={20}
+                        />
+                        <p className='my-2 second-font-color'> Memory usage per operation batch {"(MB)"} </p>
+                        <Graph data={benchmarkResult.uniform.memoryUsage}/>
+                    </div>
+                </Col>
+
+                
+                <Col className='pe-lg-0' sm={12} lg={6}>
+                    <div className='my-2 p-4 border-gray '>
+                        <Header2
+                            headerText={"Non - Uniform Distribution"}
+                            imagePath={"/chart.svg"}
+                            size={20}
+                        />
+                        <p className='my-2 second-font-color'> Memory usage per operation batch {"(MB)"} </p>
+                        <Graph data={benchmarkResult.nonUniform.memoryUsage}/>
+                    </div>
+                </Col>
+            </Row>
+
+            
         </Container>
     </>)
 }

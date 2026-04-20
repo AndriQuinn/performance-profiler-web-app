@@ -28,6 +28,7 @@ export function DataProvider({ children }) {
             if (type === 'BENCHMARK_RESULT') {
               setBenchmarkResult(newResult)};
               setMetrics(newMetrics)
+              sessionStorage.setItem("downSampling", JSON.stringify(newResult))
             }
         
         // -- Table Worker Receiver -- 
