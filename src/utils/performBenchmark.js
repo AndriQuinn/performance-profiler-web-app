@@ -6,6 +6,7 @@ export const performBenchmark = (attempts, dataset ) => {
 
     //  --- Config ---
     const DOWNSAMPLE_RATE = 30
+    const TO_NANOSECONDS = 1e6
     let plotPoints = Math.floor(attempts / DOWNSAMPLE_RATE)  // For noise handling, attempts has minumum of 10k hence the lowest range is 200 to handle noise
     const NUM_SERIES = 6 // Interpolation - Uniform / Non Uniform - Hybrid - Uniform / Non Uniform
     const algorithms = [
@@ -49,25 +50,25 @@ export const performBenchmark = (attempts, dataset ) => {
 
       // Handle noise / Down Sampling when iteration reached plotPoints
       if (i >= plotPoints * counter ) {
-        recordDownSampling(result, plotPoints, noiseHandlers, metrics,counter,algorithms)
+        recordDownSampling(result, plotPoints, noiseHandlers, metrics,counter,algorithms, TO_NANOSECONDS)
         counter += 1
       }
     } 
 
     metrics.averageTime = metrics.totalExecutionTime / NUM_SERIES
-
+    
     return { result, metrics }
 }
 
-const recordDownSampling = (result,plotPoints, noiseHandler, metrics,counter, algorithms) => {
+const recordDownSampling = (result,plotPoints, noiseHandler, metrics,counter, algorithms, TO_NANOSECONDS) => {
 // build point dynamically from algorithms array
   const uniformPoint = { x: counter }
   const nonUniformPoint = { x: counter }
   const allValues = []
 
   for (const { key } of algorithms) {
-    uniformPoint[key] = noiseHandler[key].uniform / plotPoints
-    nonUniformPoint[key] = noiseHandler[key].nonUniform / plotPoints
+    uniformPoint[key] = ((noiseHandler[key].uniform / plotPoints) * TO_NANOSECONDS)
+    nonUniformPoint[key] = ((noiseHandler[key].nonUniform / plotPoints) * TO_NANOSECONDS)
 
     allValues.push(uniformPoint[key], nonUniformPoint[key])
 
