@@ -9,7 +9,8 @@ import { useData } from '../hooks/useData';
 import { useNavigate } from "react-router-dom";
 
 const ViewResults = () => {
-
+    const memBefore = performance.memory?.usedJSHeapSize ?? 0
+    console.log(memBefore)
     return (<>
         <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center gray-bg p-1 p-md-2 p-lg-3 p-xl-5">
             <Header/>
@@ -198,7 +199,7 @@ const GraphPanels = () => {
                 </Col>
             </Row>
 
-            {/* <Row className='g-0 gx-lg-4 border-gray p-3 my-4'>
+            <Row className='g-0 gx-lg-4 border-gray p-3 my-4'>
                 <Header2
                     headerText={"Memory Usage Analysis"}
                     imagePath={"/chart.svg"}
@@ -215,7 +216,7 @@ const GraphPanels = () => {
                             size={20}
                         />
                         <p className='my-2 second-font-color'> Memory usage per operation batch {"(MB)"} </p>
-                        <Graph data={benchmarkResult.uniform.executionTime}/>
+                        <Graph data={benchmarkResult.uniform.memoryUsage}/>
                     </div>
                 </Col>
 
@@ -228,10 +229,10 @@ const GraphPanels = () => {
                             size={20}
                         />
                         <p className='my-2 second-font-color'> Memory usage per operation batch {"(MB)"} </p>
-                        <Graph data={benchmarkResult.nonUniform.executionTime}/>
+                        <Graph data={benchmarkResult.nonUniform.memoryUsage}/>
                     </div>
                 </Col>
-            </Row> */}
+            </Row>
 
             
         </Container>
