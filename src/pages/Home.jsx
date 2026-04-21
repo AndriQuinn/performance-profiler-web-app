@@ -1,22 +1,24 @@
 import '../App.css'
 import { Container, Button, Spinner } from "react-bootstrap";
 import Header from '../components/Header';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Header2 from '../components/Header2';
 import { useEffect, useState } from "react";
 import { useRef } from 'react';
 import { useGenerate } from '../hooks/useGenerate';
+import PageRow from '../components/PageRow';
 
 const Home = () => {
 
     const navigate = useNavigate();  // Manual page navigation
+    const { pathname } = useLocation();
 
     return (
         <>
-            <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center gray-bg p-1 p-md-2 p-lg-3 p-xl-5">
+            <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center custom-padding gray-bg custom-container">
                 <Header/>
-                <Container fluid className="white-bg p-3 p-md-5 my-3 ">
-                    <Pages/>
+                <Container fluid className="white-bg p-2 p-md-5 my-3 ">
+                    <PageRow currentPage={pathname}/>
                     <InstructionSection/>
                     <ImportDatasetSection/>
                     <SampleDataSection navigate={navigate}/>
@@ -27,34 +29,7 @@ const Home = () => {
     )
 }
 
-const Pages = () => {
-    return (
-        <>
-            <div className='d-flex flex-column flex-lg-row justify-content-between px-5 align-items-center'>
-                <div className='d-flex d-none d-md-block flex-row align-items-center justify-content-center my-2 my-lg-0'>
-                    <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
-                        1
-                    </Button>
-                    Import Dataset 
-                </div>
-                {/* <div className="step-line d-none d-md-block"></div> */}
-                <div className='d-flex d-none d-md-block flex-row align-items-center justify-content-center my-2 my-lg-0'>
-                    <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
-                        2
-                    </Button>
-                    Run Benchmarks
-                </div>
-                {/* <div className="step-line d-none d-md-block"></div> */}
-                <div className='d-flex d-none d-md-block flex-row align-items-center justify-content-center my-2 my-lg-0'>
-                    <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
-                        3
-                    </Button>
-                    View Results
-                </div>
-            </div>
-        </>
-    )
-}
+// --- Section Components ---
 
 const InstructionSection = () => {
     return (<>
@@ -63,7 +38,7 @@ const InstructionSection = () => {
                 <Header2 
                     headerText={"Dataset Instruction"}
                     imagePath={"information.svg"}
-                    size={25}
+                    size={20}
                 />
                 <p className='my-2'>This system evaluates the performance of search algorithms using an e-commerce dataset. </p>
                 <p>You can either: </p>
@@ -120,7 +95,7 @@ const ImportDatasetSection = () => {
                     <Header2 
                         headerText={"Import E-commerce Dataset"}
                         imagePath={"database-gray.svg"}
-                        size={25}
+                        size={20}
                     />
                     <div>
                         <p className='my-2 second-font-color'> Upload your dataset file (JSON or CSV format) or generate sample data </p>
@@ -165,12 +140,12 @@ const SampleDataSection = ({ navigate }) => {
                     <Header2 
                         headerText={"Generate Sample Dataset"}
                         imagePath={"/table-gray.svg"}
-                        size={25}
+                        size={20}
                     />      
                     <div>
                         <p className='my-2 second-font-color'> Quickly generate synthetic e-commerce data for testing </p>
                     </div>
-                    <div  className='d-flex flex-column flex-lg-row justify-content-between align-items-center my-3'>
+                    <div  className='d-flex flex-column flex-xl-row justify-content-between align-items-center my-3'>
                         <GenerateDataButton
                             label={"1K"}
                             handleGenerateData={handleGenerateData}
@@ -201,6 +176,8 @@ const SampleDataSection = ({ navigate }) => {
         </>
     )
 }
+
+// --- Smaller Components ---
 
 const GenerateDataButton = ({ label, handleGenerateData, size, isLoading }) => {
     return(<>

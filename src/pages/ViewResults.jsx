@@ -1,52 +1,29 @@
 import '../App.css'
 import { Container, Button, Row, Col } from "react-bootstrap";
 import Header from '../components/Header';
-import { Link } from "react-router-dom";
 import Header2 from '../components/Header2';
 import Graph from '../components/Graph';
 import { downloadFromSessionStorage } from '../utils/downloadResult';
 import { useData } from '../hooks/useData';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import PageRow from '../components/PageRow';
 
 const ViewResults = () => {
-    const memBefore = performance.memory?.usedJSHeapSize ?? 0
-    console.log(memBefore)
+
+    const { pathname } = useLocation(); // Get current path
+    
     return (<>
-        <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center gray-bg p-1 p-md-2 p-lg-3 p-xl-5">
+        <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center custom-padding gray-bg shadow-lg">
             <Header/>
-            <Container fluid className="white-bg p-4 p-md-5 my-3 ">
-                <Pages/>
+            <Container fluid className="white-bg p-2 p-md-5 my-3 ">
+                <PageRow currentPage={pathname}/>
                 <Body/>
             </Container>
         </Container>    
     </>)
 }
 
-const Pages = () => {
-    return (<>
-        <div className='d-flex flex-column flex-lg-row justify-content-between px-5'>
-            <div className='d-flex flex-row align-items-center justify-content-center my-2 my-lg-0'>
-                <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
-                    1
-                </Button>
-                Import Dataset 
-            </div>
-                
-            <div className='d-flex flex-row align-items-center justify-content-center my-2 my-lg-0'>
-                <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
-                    2
-                </Button>
-                Run Benchmarks
-            </div>
-            <div className='d-flex flex-row align-items-center justify-content-center my-2 my-lg-0'>
-                <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
-                    3
-                </Button>
-                View Results
-            </div>
-        </div>
-    </>)
-}
+// --- Section Components ---
 
 const Body = () => {
 
@@ -74,7 +51,6 @@ const Body = () => {
             <BenchmarkAnalysis/>
             <GraphPanels/>
             <DownloadResultSection/>
-
         </Container>
     </>)    
 }
@@ -144,7 +120,7 @@ const BenchmarkAnalysis = () => {
                 <Header2
                     headerText={"Benchmark Result Analysis"}
                     imagePath={"/pie-chart.svg"}
-                    size={25}
+                    size={20}
                 />
                 <p className='my-2 second-font-color'> AI-driven insights into the current run </p>
                 <p className='mt-4 my-0 py-0'> "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
@@ -174,28 +150,20 @@ const GraphPanels = () => {
 
                 {/* Uniform graph */}
                 <Col className='ps-lg-0' sm={12} lg={6}>
-                    <div className='my-2 p-4 border-gray '>
-                        <Header2
-                            headerText={"Uniform Distribution"}
-                            imagePath={"/chart.svg"}
-                            size={20}
-                        />
-                        <p className='my-2 second-font-color'> Execution time per operation batch {"(ns)"} </p>
-                        <Graph data={benchmarkResult.uniform.executionTime}/>
-                    </div>
+                    <GraphContainer
+                        data={benchmarkResult.uniform.executionTime}
+                        title={"Uniform Distribution"}
+                        description={"Execution time per operation batch ns"}
+                    />
                 </Col>
 
                 {/* Non-Uniform graph */}
                 <Col className='pe-lg-0' sm={12} lg={6}>
-                    <div className='my-2 p-4 border-gray '>
-                        <Header2
-                            headerText={"Non - Uniform Distribution"}
-                            imagePath={"/chart.svg"}
-                            size={20}
-                        />
-                        <p className='my-2 second-font-color'> Execution time per operation batch {"(ns)"} </p>
-                        <Graph data={benchmarkResult.nonUniform.executionTime}/>
-                    </div>
+                    <GraphContainer 
+                        data={benchmarkResult.nonUniform.executionTime}
+                        title={"Non - Uniform Distribution"}
+                        description={"Execution time per operation batch ns"}
+                    />
                 </Col>
             </Row>
 
@@ -206,35 +174,23 @@ const GraphPanels = () => {
                     size={20}
                 />
                 <p className='my-2 second-font-color'> Memory consumption across search operation batches (MB) </p>
-
                 
                 <Col className='ps-lg-0' sm={12} lg={6}>
-                    <div className='my-2 p-4 border-gray '>
-                        <Header2
-                            headerText={"Uniform Distribution"}
-                            imagePath={"/chart.svg"}
-                            size={20}
-                        />
-                        <p className='my-2 second-font-color'> Memory usage per operation batch {"(MB)"} </p>
-                        <Graph data={benchmarkResult.uniform.memoryUsage}/>
-                    </div>
+                    <GraphContainer
+                        data={benchmarkResult.uniform.memoryUsage}
+                        title={"Uniform Distribution"}
+                        description={"Memory usage per operation batch MB "}
+                    />
                 </Col>
-
-                
                 <Col className='pe-lg-0' sm={12} lg={6}>
-                    <div className='my-2 p-4 border-gray '>
-                        <Header2
-                            headerText={"Non - Uniform Distribution"}
-                            imagePath={"/chart.svg"}
-                            size={20}
-                        />
-                        <p className='my-2 second-font-color'> Memory usage per operation batch {"(MB)"} </p>
-                        <Graph data={benchmarkResult.nonUniform.memoryUsage}/>
-                    </div>
+                    <GraphContainer
+                        data={benchmarkResult.nonUniform.memoryUsage}
+                        title={"Non - Uniform Distribution"}
+                        description={"Memory usage per operation batch MB "}
+                    />
                 </Col>
             </Row>
 
-            
         </Container>
     </>)
 }
@@ -258,4 +214,24 @@ const DownloadResultSection = () => {
         </Container>
     </>)
 }
+
+// --- Smaller Components ---
+
+const GraphContainer = ({
+    data, title, description
+}) => {
+    return (<>
+        <div className='my-2 p-4 border-gray '>
+            <Header2
+                headerText={title}
+                imagePath={"/chart.svg"}
+                size={20}
+            />
+            <p className='my-2 second-font-color'> {description} </p>
+            <Graph data={data}/>
+        </div>                
+    </>)
+}
+
+
 export default ViewResults

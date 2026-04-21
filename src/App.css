@@ -161,3 +161,30 @@
 .black-font {
   color: black !important;
 }
+
+.button-bg {
+  background-color: #f3f4f6 !important;
+}
+
+.custom-padding {
+  padding: 0.4rem !important;
+}
+
+@media (min-width: 768px) {
+  .custom-padding {
+    padding: 2rem 6rem !important
+  }
+}
+
+@media (min-width: 1024px) {
+  .custom-padding {
+    padding: 2rem 9rem !important
+  }
+}
+
+@media (min-width: 1025px) {
+  .custom-padding {
+    padding: 2rem 12rem !important
+  }
+}
+

@@ -3,61 +3,38 @@ import { Container, Button , Dropdown, Form, Spinner, Modal, Table } from "react
 import Header from '../components/Header';
 import { useEffect, useState } from 'react';
 import Header2 from '../components/Header2';
-import { data, useNavigate } from "react-router-dom";
+import { data, useNavigate, useLocation } from "react-router-dom";
 import { useData } from '../hooks/useData';
 import { useBenchmark } from '../hooks/useBenchmark';
 import { useTable } from '../hooks/useTable'
 import { useGenerateTable } from '../hooks/useGenerateTable';
+import PageRow from '../components/PageRow';
+
 
 const RunBenchamark = () => {
+
+    const { pathname } = useLocation(); // Get current path
 
     // -- State --
     const [attempts,setAttempts] = useState(1e4) // Default Search Attempts 10k
 
     return (
         <>
-            <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center gray-bg p-1 p-md-2 p-lg-3 p-xl-5">
+            <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center custom-padding gray-bg shadow-lg">
                 <Header/>
-                <Container fluid className="white-bg p-4 p-md-5 my-3 ">
-                    <Pages/>
+                <Container fluid className="white-bg p-2 p-md-5 my-3 ">
+                    <PageRow currentPage={pathname}/>
                     <ExecuteBenchmarkSection 
                         attempts={attempts}
                         setAttempts={setAttempts}
                     />
                 </Container>
             </Container>    
-            
         </>
     )
 }
 
-const Pages = () => {
-    return (
-        <>
-            <div className='d-flex flex-column flex-lg-row justify-content-between px-5'>
-                <div className='d-flex flex-row align-items-center justify-content-center my-2 my-lg-0'>
-                    <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
-                        1
-                    </Button>
-                    Import Dataset 
-                </div>
-                
-                <div className='d-flex flex-row align-items-center justify-content-center my-2 my-lg-0'>
-                    <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
-                        2
-                    </Button>
-                    Run Benchmarks
-                </div>
-                <div className='d-flex flex-row align-items-center justify-content-center my-2 my-lg-0'>
-                    <Button className='me-2' style={{borderRadius: "50%", width: "40px", height: "40px",padding: 0,}} variant="primary">
-                        3
-                    </Button>
-                    View Results
-                </div>
-            </div>
-        </>
-    )
-}
+// --- Section Components ---
 
 const ExecuteBenchmarkSection = ({
     selectedAlgo,
@@ -71,7 +48,7 @@ const ExecuteBenchmarkSection = ({
                 <Header2 
                     headerText={"Execute Performance Benchmark"}
                     imagePath={"/thunder.svg"}
-                    size={25}
+                    size={20}
                 />      
                 <div>
                     <p className='my-2 second-font-color'> Run comprehensive tests to measure search operations </p>
@@ -95,7 +72,7 @@ const ExecuteBenchmarkSection = ({
 const StartBenchmarkSection = ({
     attempts
 }) => {
-
+    
     // -- Use Data --
     const { benchmarkResult, datasetArr, datasetTable } = useData()
     const { generateTable } = useGenerateTable()
@@ -139,7 +116,7 @@ const StartBenchmarkSection = ({
     return (<>
         <div className='d-flex flex-column flex-lg-row justify-content-between align-items-center my-4 p-4 border-gray'> 
             <div className='d-flex justify-content-start align-items-center'>
-                <img src='/database.svg' className='me-3' height={35} />
+                <img src='/database.svg' className='me-3' height={30} />
                 <div className='d-flex flex-column justify-content-start'>
                     <h6> Dataset Loaded </h6>
                     <h4 className='text-primary fw-bold'> {Number(sessionStorage.getItem("size")).toLocaleString()} </h4>
@@ -230,13 +207,13 @@ const ImplmentationSection = ( {
             <Header2 
                 headerText={"Implementation Section"}
                 imagePath={"information-muted.svg"}
-                size={25}
+                size={20}
             />      
 
-            <div className='mt-3'>
-                <div className='d-flex flex-row justify-content-start'>
-                    <img src='search.svg' className='me-3' height={20} />
-                    <h6> Search </h6>
+            <div className='mt-4'>
+                <div className='d-flex flex-row justify-content-start align-items-center mb-2 '>
+                    <img src='search.svg' className='me-2' height={15} />
+                    <h6 className='my-0'> Search </h6>
                 </div>
                 
                 {/* Search attempt setter */}
@@ -275,7 +252,7 @@ const BenchmarkInformationSection = () => {
                 <div className=' rounded d-flex align-items-center justify-content-center' >
                     <img src="/information-brown.svg" alt="" height={20}/>
                 </div>
-                <h5 className='mx-2 mb-0'> Benchmark Information </h5>
+                <h5 className='mx-2 my-0'> Benchmark Information </h5>
             </div>
             <ul className='my-0 d-flex flex-column justify-content-start'>
                 <li> <p  className='my-0' style={{color: "#654321"}}> <b>Search Test: </b> Performs random SKU lookups to measure search performance </p> </li>
@@ -285,6 +262,8 @@ const BenchmarkInformationSection = () => {
         </div>
     </>)
 }
+
+// --- Smaller Components ---
 
 const DataTable = ({ table }) => {
     const headers = ['SKU', 'Name', 'Category', 'Price', 'Stock'] // Headers
