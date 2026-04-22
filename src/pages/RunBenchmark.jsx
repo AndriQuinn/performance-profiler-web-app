@@ -9,6 +9,7 @@ import { useBenchmark } from '../hooks/useBenchmark';
 import { useTable } from '../hooks/useTable'
 import { useGenerateTable } from '../hooks/useGenerateTable';
 import PageRow from '../components/PageRow';
+import PageTransition from '../components/PageTransition';
 
 
 const RunBenchamark = () => {
@@ -20,6 +21,7 @@ const RunBenchamark = () => {
 
     return (
         <>
+        <PageTransition>
             <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center custom-padding gray-bg shadow-lg">
                 <Header/>
                 <Container fluid className="white-bg p-2 p-md-5 my-3 ">
@@ -30,6 +32,7 @@ const RunBenchamark = () => {
                     />
                 </Container>
             </Container>    
+        </PageTransition>
         </>
     )
 }

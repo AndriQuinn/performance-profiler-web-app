@@ -3,10 +3,11 @@ import { Container, Button, Spinner } from "react-bootstrap";
 import Header from '../components/Header';
 import { useNavigate, useLocation } from "react-router-dom";
 import Header2 from '../components/Header2';
-import { useEffect, useState } from "react";
-import { useRef } from 'react';
+import { useEffect, useState, useRef } from "react";
 import { useGenerate } from '../hooks/useGenerate';
 import PageRow from '../components/PageRow';
+import PageTransition from '../components/PageTransition';
+
 
 const Home = () => {
 
@@ -15,6 +16,7 @@ const Home = () => {
 
     return (
         <>
+        <PageTransition>
             <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center custom-padding gray-bg custom-container">
                 <Header/>
                 <Container fluid className="white-bg p-2 p-md-5 my-3 ">
@@ -24,7 +26,7 @@ const Home = () => {
                     <SampleDataSection navigate={navigate}/>
                 </Container>
             </Container>    
-            
+        </PageTransition>
         </>
     )
 }
