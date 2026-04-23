@@ -12,13 +12,12 @@ export default function PageRow({
             { label: 'View Results',    number: '3', activeOn: ['/viewResults'] },
         ];
 
-
     return (<>
 
         <div className='d-flex flex-column flex-lg-row justify-content-between px-5 align-items-center my-4 mb-5'>
             {steps.map((step, i) => (
                 (
-                    <Fragment>
+                    <Fragment key={i}>
                         <PageMarker
                             currentPage={currentPage}
                             acitvePage={step.activeOn}
@@ -26,13 +25,11 @@ export default function PageRow({
                             number={step.number}
                         />    
                         {i < steps.length - 1 && (
-                            <div class="step-line"></div>
+                            <div className="step-line"></div>
                         )}
-                    </Fragment>
-                    
+                    </Fragment>      
                 )
             ))
-
             }    
         </div>
     </>)

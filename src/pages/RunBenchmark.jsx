@@ -15,24 +15,26 @@ import PageTransition from '../components/PageTransition';
 const RunBenchamark = () => {
 
     const { pathname } = useLocation(); // Get current path
-
+    const { setBenchmarkResult } = useData()
     // -- State --
     const [attempts,setAttempts] = useState(1e4) // Default Search Attempts 10k
 
+    
+
     return (
         <>
-        <PageTransition>
-            <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center custom-padding gray-bg shadow-lg">
-                <Header/>
+        <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center custom-padding gray-bg shadow-lg">
+            <Header/>
                 <Container fluid className="white-bg p-2 p-md-5 my-3 ">
                     <PageRow currentPage={pathname}/>
-                    <ExecuteBenchmarkSection 
-                        attempts={attempts}
-                        setAttempts={setAttempts}
-                    />
+                    <PageTransition>
+                        <ExecuteBenchmarkSection 
+                            attempts={attempts}
+                            setAttempts={setAttempts}
+                        />
+                    </PageTransition>
                 </Container>
-            </Container>    
-        </PageTransition>
+        </Container>    
         </>
     )
 }
@@ -77,7 +79,7 @@ const StartBenchmarkSection = ({
 }) => {
     
     // -- Use Data --
-    const { benchmarkResult, datasetArr, datasetTable } = useData()
+    const { isDoneBenchmark, setDoneBenchmark, benchmarkResult, datasetArr, datasetTable } = useData()
     const { generateTable } = useGenerateTable()
     const { getTable } = useTable()    
     const { runBenchmark } = useBenchmark()
@@ -111,7 +113,8 @@ const StartBenchmarkSection = ({
 
     // Navigate to result page after benchmark
     useEffect(() => {
-        if (!benchmarkResult) return;
+        if (!isDoneBenchmark) return;
+        setDoneBenchmark(false)
         setLoading(false)
         navigate("/viewResults")
     },[benchmarkResult])
@@ -155,7 +158,7 @@ const StartBenchmarkSection = ({
                 <DatasetModal show={isShow} setShow={setShow} dataset={datasetTable} limiter={limiter} setLimiter={setLimiter} />
                 
                 {/* Start Benchmarking Button */}
-                <Button className='d-flex flex-row justify-content-center align-items-center  black-button my-0' onClick={() => benchmarkHandler(attempts)}>
+                <Button className='d-flex flex-row justify-content-center align-items-center  black-button my-0' onClick={() => benchmarkHandler(attempts)} variant='outline-secondary'>
                     {isloading ? (
                         <div>
                             <Spinner
@@ -338,11 +341,11 @@ const DatasetModal = ({ show, setShow, dataset, limiter, setLimiter }) => {
             </Modal.Body>
 
             <Modal.Footer className='d-flex justify-content-between '>
-                <Button className={ limiter <= 1 ? "invisible disabled" : 'transparent border-gray-hover-gray' } onClick={() => setLimiter(limiter - 1)}>
+                <Button className={ limiter <= 1 ? "invisible disabled" : 'transparent border-gray-hover-gray' } onClick={() => setLimiter(limiter - 1)} variant='outline-secondary'>
                     {"<"} Previous
                 </Button>
                 <p className='second-font-color'> Page {limiter} of {SIZE / ROW_NUM} </p>
-                <Button className={ limiter >= (SIZE / ROW_NUM) ? "invisible disabled" : 'transparent border-gray-hover-gray' } onClick={() => setLimiter(limiter + 1)}>
+                <Button className={ limiter >= (SIZE / ROW_NUM) ? "invisible disabled" : 'transparent border-gray-hover-gray' } onClick={() => setLimiter(limiter + 1)} variant='outline-secondary'>
                     Next {">"} 
                 </Button>
             </Modal.Footer>

@@ -14,15 +14,15 @@ const ViewResults = () => {
     const { pathname } = useLocation(); // Get current path
     
     return (<>
-    <PageTransition>
         <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center custom-padding gray-bg shadow-lg">
             <Header/>
             <Container fluid className="white-bg p-2 p-md-5 my-3 ">
                 <PageRow currentPage={pathname}/>
-                <Body/>
+                <PageTransition>
+                    <Body/>
+                </PageTransition>
             </Container>
         </Container>
-    </PageTransition>    
     </>)
 }
 
@@ -30,11 +30,10 @@ const ViewResults = () => {
 
 const Body = () => {
 
-    const { setBenchmarkResult } = useData()
+    const { setBenchmarkResult, setFinishBenchmark } = useData()
     const navigate = useNavigate()
 
     const anotherBenchmarkHandler = () => {
-        setBenchmarkResult(null)
         navigate("/runBenchmark")
     }
 

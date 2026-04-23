@@ -16,17 +16,17 @@ const Home = () => {
 
     return (
         <>
-        <PageTransition>
-            <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center custom-padding gray-bg custom-container">
-                <Header/>
-                <Container fluid className="white-bg p-2 p-md-5 my-3 ">
+        <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center custom-padding gray-bg custom-container">
+            <Header/>
+                <Container fluid className="white-bg p-2 p-md-4 my-3 ">
                     <PageRow currentPage={pathname}/>
-                    <InstructionSection/>
-                    <ImportDatasetSection/>
-                    <SampleDataSection navigate={navigate}/>
-                </Container>
-            </Container>    
-        </PageTransition>
+                    <PageTransition>
+                        <InstructionSection/>
+                        <ImportDatasetSection/>
+                        <SampleDataSection navigate={navigate}/>
+                    </PageTransition>
+                </Container>    
+        </Container>    
         </>
     )
 }

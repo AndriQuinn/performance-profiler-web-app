@@ -57,9 +57,7 @@ export const performBenchmark =  (attempts, dataset ) => {
       }
     } 
 
-    metrics.averageTime = metrics.totalExecutionTime / 6
-
-    console.log("Result Memory? ", result.uniform.memoryUsage)
+    metrics.averageTime = metrics.totalExecutionTime / DOWNSAMPLE_RATE / NUM_SERIES
     
     return { result, metrics }
 }
