@@ -1,5 +1,5 @@
 import '../App.css'
-import { Container, Button, Row, Col } from "react-bootstrap";
+import { Container, Button, Row, Col, Table } from "react-bootstrap";
 import Header from '../components/Header';
 import Header2 from '../components/Header2';
 import Graph from '../components/Graph';
@@ -8,6 +8,7 @@ import { useData } from '../hooks/useData';
 import { useNavigate, useLocation } from "react-router-dom";
 import PageRow from '../components/PageRow';
 import PageTransition from '../components/PageTransition';
+import { Fragment } from 'react';
 
 const ViewResults = () => {
 
@@ -116,6 +117,9 @@ const ImplementationUsed = () => {
 }
 
 const BenchmarkAnalysis = () => {
+
+    const { metrics } = useData()
+
     return (<>
         <Container fluid  className='px-0'>
             <div className='p-4 border-gray'>
@@ -130,8 +134,28 @@ const BenchmarkAnalysis = () => {
                     Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
                     Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
                 </p>
+                <Table bordered hover responsive className='p-5 my-4'>
+                    <thead>
+                        <tr className='table-secondary'>
+                            <th> Algorithms </th>
+                            <th> Ops </th>
+                            <th> Total Time {"(ns)"} </th>
+                            <th> Avg Time {"(ns)"}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {metrics.byAlgorithms.map((algorithms,i) => (
+                            <tr key={i}>
+                                <td> {algorithms.name} </td>
+                                <td> {Number(sessionStorage.getItem("size")).toLocaleString()} </td>
+                                <td> {(algorithms.total).toFixed(2)} </td>
+                                <td> {(algorithms.total / 30 / 2).toFixed(2)} </td>
+                            </tr>
+                            ))
+                        }
+                    </tbody>
+                </Table>
             </div>
-
         </Container>
     </>)
 }

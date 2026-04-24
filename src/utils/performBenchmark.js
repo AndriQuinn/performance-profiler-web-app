@@ -36,6 +36,11 @@ export const performBenchmark =  (attempts, dataset ) => {
     }
 
     const metrics = {
+      byAlgorithms: [
+        { name: "Interpolation-Binary", total: 0 , average: 0 }, // Interpolation-Binary
+        { name: "Interpolation-Fibonacci", total: 0 , average: 0 }, // Interpolation-Fibonacci
+        { name: "Interpolation-Exponential", total: 0 , average: 0 }, // Interpolation-Exponential
+      ],
       totalExecutionTime: 0,
       averageTime: 0,
       fastestOperation: Infinity
@@ -70,8 +75,11 @@ const recordDownSampling = (result,plotPoints, noiseHandler, metrics,counter, al
   const nonUniformMemPoint = { x: counter }
 
   const allValues = []
+  let metricIteration = 0
 
   for (const { key } of algorithms) {
+    metrics.byAlgorithms[metricIteration].total += ((noiseHandler[key].uniform.time / plotPoints) * TO_NANOSECONDS) +  ((noiseHandler[key].nonUniform.time / plotPoints) * TO_NANOSECONDS)
+    metricIteration+= 1
     uniformTimePoint[key] = ((noiseHandler[key].uniform.time / plotPoints) * TO_NANOSECONDS)
     nonUniformTimePoint[key] = ((noiseHandler[key].nonUniform.time / plotPoints) * TO_NANOSECONDS)
 
