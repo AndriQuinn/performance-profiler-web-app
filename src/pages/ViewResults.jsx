@@ -203,14 +203,14 @@ const GraphPanels = () => {
                 
                 <Col className='ps-lg-0' sm={12} lg={6}>
                     <GraphContainer
-                        data={benchmarkResult.uniform.memoryUsage}
+                        data={benchmarkResult.uniformMemory}
                         title={"Uniform Distribution"}
                         description={"Memory usage per operation batch MB "}
                     />
                 </Col>
                 <Col className='pe-lg-0' sm={12} lg={6}>
                     <GraphContainer
-                        data={benchmarkResult.nonUniform.memoryUsage}
+                        data={benchmarkResult.nonUniformMemory}
                         title={"Non - Uniform Distribution"}
                         description={"Memory usage per operation batch MB "}
                     />

@@ -84,6 +84,7 @@ const StartBenchmarkSection = ({
     const { getTable } = useTable()    
     const { runBenchmark } = useBenchmark()
     const navigate = useNavigate()
+    const SIZE = Number(sessionStorage.getItem("size"))
 
     // -- State -- 
     const [ isloading, setLoading ] = useState(false); // Loading state
@@ -94,6 +95,21 @@ const StartBenchmarkSection = ({
     const benchmarkHandler = ( attempts ) => {
         setLoading(true)
         runBenchmark(attempts)
+    }
+
+    const handleRun = async (attempts) => {
+        setLoading(true)
+
+        const [_, uniformMemory, nonUniformMemory] = await Promise.all([
+            runBenchmark(attempts),        // worker → timing (both distributions)
+            fetchMemory(attempts, "uniform", SIZE),        // API → uniform memory
+            fetchMemory(attempts, "nonUniform", SIZE)      // API → nonUniform memory
+        ])
+
+        setBenchmarkResult({ ...benchmarkResult, uniformMemory, nonUniformMemory })
+
+        navigate("/viewResults")
+        setLoading(false)
     }
 
     // -- Side Effects -- 
@@ -158,7 +174,7 @@ const StartBenchmarkSection = ({
                 <DatasetModal show={isShow} setShow={setShow} dataset={datasetTable} limiter={limiter} setLimiter={setLimiter} />
                 
                 {/* Start Benchmarking Button */}
-                <Button className='d-flex flex-row justify-content-center align-items-center  black-button my-0' onClick={() => benchmarkHandler(attempts)} variant='outline-secondary'>
+                <Button className='d-flex flex-row justify-content-center align-items-center  black-button my-0' onClick={() => handleRun(attempts)} variant='outline-secondary'>
                     {isloading ? (
                         <div>
                             <Spinner
@@ -352,6 +368,16 @@ const DatasetModal = ({ show, setShow, dataset, limiter, setLimiter }) => {
         </Modal>
 
     </>)
+}
+
+const fetchMemory = async (attempt, type, size) => {
+  const res = await fetch("/api/recordMemoryUsage", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ attempts, type, size })
+  })
+  const data = await res.json()
+  return data.result
 }
 
 export default RunBenchamark
