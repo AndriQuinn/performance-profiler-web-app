@@ -370,7 +370,7 @@ const DatasetModal = ({ show, setShow, dataset, limiter, setLimiter }) => {
     </>)
 }
 
-const fetchMemory = async (attempt, type, size) => {
+const fetchMemory = async (attempts, type, size) => {
   const res = await fetch("/api/recordMemoryUsage", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
