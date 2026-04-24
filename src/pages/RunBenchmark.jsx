@@ -79,7 +79,7 @@ const StartBenchmarkSection = ({
 }) => {
     
     // -- Use Data --
-    const { isDoneBenchmark, setDoneBenchmark, benchmarkResult, datasetArr, datasetTable } = useData()
+    const { isDoneBenchmark, setDoneBenchmark, benchmarkResult, datasetArr, datasetTable, setBenchmarkResult } = useData()
     const { generateTable } = useGenerateTable()
     const { getTable } = useTable()    
     const { runBenchmark } = useBenchmark()
@@ -92,10 +92,10 @@ const StartBenchmarkSection = ({
     const [limiter, setLimiter] = useState(1)
 
     // Handler
-    const benchmarkHandler = ( attempts ) => {
-        setLoading(true)
-        runBenchmark(attempts)
-    }
+    // const benchmarkHandler = ( attempts ) => {
+    //     setLoading(true)
+    //     runBenchmark(attempts)
+    // }
 
     const handleRun = async (attempts) => {
         setLoading(true)
