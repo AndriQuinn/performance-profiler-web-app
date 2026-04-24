@@ -28,10 +28,12 @@ export function DataProvider({ children }) {
             if (type === 'GENERATED') setDatasetArr(newDatasetArr);
             if (type === 'BENCHMARK_RESULT') {
               setDoneBenchmark(true)
-              setBenchmarkResult(newResult)};
+              setBenchmarkResult(newResult)
               setMetrics(newMetrics)
               sessionStorage.setItem("downSampling", JSON.stringify(newResult))
+            };
               
+            
             }
         
         // -- Table Worker Receiver -- 

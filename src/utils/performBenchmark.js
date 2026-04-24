@@ -23,8 +23,8 @@ export const performBenchmark =  (attempts, dataset ) => {
     // Noise Handlers 
     const noiseHandlers = Object.fromEntries(
       algorithms.map(({ key }) => [key, {
-         uniform: { time: 0, memory: 0 }, 
-         nonUniform: { time: 0, memory: 0 }
+         uniform: { time: 0 }, 
+         nonUniform: { time: 0 }
     }])
     )
 

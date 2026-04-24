@@ -92,11 +92,6 @@ const StartBenchmarkSection = ({
     const [limiter, setLimiter] = useState(1)
 
     // Handler
-    // const benchmarkHandler = ( attempts ) => {
-    //     setLoading(true)
-    //     runBenchmark(attempts)
-    // }
-
     const handleRun = async (attempts) => {
         setLoading(true)
 
@@ -106,7 +101,7 @@ const StartBenchmarkSection = ({
             fetchMemory(attempts, "nonUniform", SIZE)      // API → nonUniform memory
         ])
 
-        setBenchmarkResult({ ...benchmarkResult, uniformMemory, nonUniformMemory })
+        setBenchmarkResult(prev => ({ ...prev, uniformMemory, nonUniformMemory }))
 
         navigate("/viewResults")
         setLoading(false)
@@ -126,14 +121,6 @@ const StartBenchmarkSection = ({
             getTable(limiter)
         }
       },[datasetArr])
-
-    // Navigate to result page after benchmark
-    useEffect(() => {
-        if (!isDoneBenchmark) return;
-        setDoneBenchmark(false)
-        setLoading(false)
-        navigate("/viewResults")
-    },[benchmarkResult])
 
     return (<>
         <div className='d-flex flex-column flex-lg-row justify-content-between align-items-center my-4 p-4 border-gray'> 

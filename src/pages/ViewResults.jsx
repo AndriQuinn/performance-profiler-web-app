@@ -163,6 +163,7 @@ const BenchmarkAnalysis = () => {
 const GraphPanels = () => {    
 
     const { benchmarkResult } = useData()
+    console.log(benchmarkResult)
 
     return (<>
         <Container fluid className='my-3 px-0 px-lg-3'>

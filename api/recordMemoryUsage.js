@@ -6,12 +6,15 @@ import { Redis } from "@upstash/redis"
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(20, "1 m"), // 10 requests per minute per IP
+  limiter: Ratelimit.slidingWindow(20, "1 m"), // 20 requests per minute per IP
 })
 
 export default async function performMemoryUsage(req, res) {
 
     if (req.method === "OPTIONS") return res.status(200).end()
+
+    console.log("URL exists:", !!process.env.UPSTASH_REDIS_REST_URL)
+    console.log("TOKEN exists:", !!process.env.UPSTASH_REDIS_REST_TOKEN)
     
     try {
       const ip = req.headers["x-forwarded-for"] || "anonymous"
