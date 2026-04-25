@@ -147,7 +147,7 @@ const BenchmarkAnalysis = () => {
                         {metrics.byAlgorithms.map((algorithms,i) => (
                             <tr key={i}>
                                 <td> {algorithms.name} </td>
-                                <td> {Number(sessionStorage.getItem("size")).toLocaleString()} </td>
+                                <td> {Number(metrics.attempts).toLocaleString()} </td>
                                 <td> {(algorithms.total).toFixed(2)} </td>
                                 <td> {(algorithms.total / 30 / 2).toFixed(2)} </td>
                             </tr>
@@ -163,7 +163,7 @@ const BenchmarkAnalysis = () => {
 const GraphPanels = () => {    
 
     const { benchmarkResult } = useData()
-    console.log(benchmarkResult)
+    sessionStorage.setItem("downSampling", JSON.stringify(benchmarkResult))
 
     return (<>
         <Container fluid className='my-3 px-0 px-lg-3'>
@@ -259,6 +259,5 @@ const GraphContainer = ({
         </div>                
     </>)
 }
-
 
 export default ViewResults

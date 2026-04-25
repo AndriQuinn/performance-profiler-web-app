@@ -11,18 +11,14 @@ import { useGenerateTable } from '../hooks/useGenerateTable';
 import PageRow from '../components/PageRow';
 import PageTransition from '../components/PageTransition';
 
-
 const RunBenchamark = () => {
 
     const { pathname } = useLocation(); // Get current path
-    const { setBenchmarkResult } = useData()
+    
     // -- State --
     const [attempts,setAttempts] = useState(1e4) // Default Search Attempts 10k
 
-    
-
-    return (
-        <>
+    return (<>
         <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center custom-padding gray-bg shadow-lg">
             <Header/>
                 <Container fluid className="white-bg p-2 p-md-5 my-3 ">
@@ -35,8 +31,7 @@ const RunBenchamark = () => {
                     </PageTransition>
                 </Container>
         </Container>    
-        </>
-    )
+    </>)
 }
 
 // --- Section Components ---
@@ -102,7 +97,6 @@ const StartBenchmarkSection = ({
         ])
 
         setBenchmarkResult(prev => ({ ...prev, uniformMemory, nonUniformMemory }))
-
         navigate("/viewResults")
         setLoading(false)
     }
@@ -212,7 +206,7 @@ const ImplmentationSection = ( {
     }
 
     return (<>
-            <div className='d-flex flex-column justify-content-start p-3 p-md-4 my-3 border-gray'> 
+        <div className='d-flex flex-column justify-content-start p-3 p-md-4 my-3 border-gray'> 
             <Header2 
                 headerText={"Implementation Section"}
                 imagePath={"information-muted.svg"}

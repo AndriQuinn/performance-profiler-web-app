@@ -1,4 +1,3 @@
-import { interpolationSearch } from "./search-algo"
 import { getRandomInt } from "./getRandomInt"
 import { interpolationBinarySearch, interpolationFibonacciSearch, interpolationExponentialSearch } from "../utils/search-algo";
 
@@ -42,7 +41,8 @@ export const performBenchmark =  (attempts, dataset ) => {
       ],
       totalExecutionTime: 0,
       averageTime: 0,
-      fastestOperation: Infinity
+      fastestOperation: Infinity,
+      attempts: attempts
     }
 
     // --- Benchmark Loop --- 

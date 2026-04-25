@@ -8,14 +8,11 @@ import { useGenerate } from '../hooks/useGenerate';
 import PageRow from '../components/PageRow';
 import PageTransition from '../components/PageTransition';
 
-
 const Home = () => {
 
-    const navigate = useNavigate();  // Manual page navigation
     const { pathname } = useLocation();
 
-    return (
-        <>
+    return ( <>
         <Container fluid className="min-vh-100 max-vw-100 d-flex flex-column justify-content-center custom-padding gray-bg custom-container">
             <Header/>
                 <Container fluid className="white-bg p-2 p-md-5 my-3 ">
@@ -23,12 +20,11 @@ const Home = () => {
                     <PageTransition>
                         <InstructionSection/>
                         <ImportDatasetSection/>
-                        <SampleDataSection navigate={navigate}/>
+                        <SampleDataSection/>
                     </PageTransition>
                 </Container>    
         </Container>    
-        </>
-    )
+    </>)
 }
 
 // --- Section Components ---
@@ -120,9 +116,11 @@ const ImportDatasetSection = () => {
     )
 }
 
-const SampleDataSection = ({ navigate }) => {
+const SampleDataSection = () => {
+
     const { datasetArr, generate } = useGenerate() // Data context
     const [isLoading, setLoading] = useState(null); // Loading state
+    const navigate = useNavigate();  // Manual page navigation
 
     // Generate data handler
     const handleGenerateData = (size) => {

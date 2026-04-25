@@ -30,22 +30,19 @@ export function DataProvider({ children }) {
               setDoneBenchmark(true)
               setBenchmarkResult(newResult)
               setMetrics(newMetrics)
-              sessionStorage.setItem("downSampling", JSON.stringify(newResult))
-            };
-              
-            
-            }
+            };  
+          }
         
         // -- Table Worker Receiver -- 
         tableWorkerRef.current.onmessage = (e) => {
-        const { type, newDatasetTable } = e.data
-        if (type === 'NEW_TABLE') setDatasetTable(newDatasetTable)
+          const { type, newDatasetTable } = e.data
+          if (type === 'NEW_TABLE') setDatasetTable(newDatasetTable)
         }
 
         // Clean up
         return  () => {
-        workerRef.current.terminate()
-        tableWorkerRef.current.terminate()
+          workerRef.current.terminate()
+          tableWorkerRef.current.terminate()
         }
 
     },[])
