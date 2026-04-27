@@ -74,7 +74,7 @@ const StartBenchmarkSection = ({
 }) => {
     
     // -- Use Data --
-    const { isDoneBenchmark, setDoneBenchmark, benchmarkResult, datasetArr, datasetTable, setBenchmarkResult } = useData()
+    const { setDoneBenchmark, benchmarkResult, datasetArr, datasetTable, setBenchmarkResult, setDataAnalysis } = useData()
     const { generateTable } = useGenerateTable()
     const { getTable } = useTable()    
     const { runBenchmark } = useBenchmark()
@@ -90,13 +90,18 @@ const StartBenchmarkSection = ({
     const handleRun = async (attempts) => {
         setLoading(true)
 
-        const [_, uniformMemory, nonUniformMemory] = await Promise.all([
+        const [executionTime, uniformMemory, nonUniformMemory] = await Promise.all([
             runBenchmark(attempts),        // worker → timing (both distributions)
             fetchMemory(attempts, "uniform", SIZE),        // API → uniform memory
             fetchMemory(attempts, "nonUniform", SIZE)      // API → nonUniform memory
         ])
 
-        setBenchmarkResult(prev => ({ ...prev, uniformMemory, nonUniformMemory }))
+        setBenchmarkResult(prev => ({ ...prev, uniformMemory, nonUniformMemory }))   
+        
+        const aiAnalysis = await analyzeData({executionTime, uniformMemory, nonUniformMemory})
+        if (aiAnalysis.ok) setDataAnalysis(aiAnalysis.interpretation);
+        else setDataAnalysis({onError: "Currently Unavailable - Please try again later, The AI may temporarily down or the limit is reached"})
+        
         navigate("/viewResults")
         setLoading(false)
     }
@@ -351,6 +356,8 @@ const DatasetModal = ({ show, setShow, dataset, limiter, setLimiter }) => {
     </>)
 }
 
+// --- Use API ---
+
 const fetchMemory = async (attempts, type, size) => {
   const res = await fetch("/api/recordMemoryUsage", {
     method: "POST",
@@ -359,6 +366,18 @@ const fetchMemory = async (attempts, type, size) => {
   })
   const data = await res.json()
   return data.result
+}
+
+const analyzeData = async (benchmarkData) => {
+  const res = await fetch("/api/aiInterpret", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ benchmarkData })
+  })
+  
+  const data = await res.json()
+
+  return {ok: data.ok, interpretation: data.interpretation}
 }
 
 export default RunBenchamark

@@ -3,11 +3,17 @@ import { useContext } from 'react';
 
 export function useBenchmark() {
 
-  const { workerRef, benchmarkResult } = useContext(DataContext);
+  const { workerRef, benchmarkResult, pendingBenchmark } = useContext(DataContext);
 
   // Send worker
-  const runBenchmark = (attempts, hybridSearch ) => {
-    workerRef.current.postMessage({type: 'RUN_BENCHMARK', payload: { attempts, hybridSearch }})
+  const runBenchmark = (attempts) => {
+    return new Promise((resolve) => {
+      pendingBenchmark.current = resolve  // store resolve
+      workerRef.current.postMessage({ 
+        type: 'RUN_BENCHMARK', 
+        payload: { attempts } 
+      })
+    })
   }
 
   return { runBenchmark,  benchmarkResult }

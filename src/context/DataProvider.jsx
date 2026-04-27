@@ -13,7 +13,9 @@ export function DataProvider({ children }) {
     const [ datasetTable, setDatasetTable ] = useState(null)
     const [ datasetArr, setDatasetArr ] = useState(null)
     const [ benchmarkResult, setBenchmarkResult ] = useState(null)
-    const [ isDoneBenchmark, setDoneBenchmark ] = useState(false)
+    // const [ isDoneBenchmark, setDoneBenchmark ] = useState(false)
+    const [ dataAnalysis, setDataAnalysis ] = useState({onError: "Currently Unavailable - Please try again later"})
+    const pendingBenchmark = useRef(null)
     let size = null
 
     // Create worker once the app starts
@@ -27,9 +29,11 @@ export function DataProvider({ children }) {
 
             if (type === 'GENERATED') setDatasetArr(newDatasetArr);
             if (type === 'BENCHMARK_RESULT') {
-              setDoneBenchmark(true)
               setBenchmarkResult(newResult)
               setMetrics(newMetrics)
+              if (pendingBenchmark.current) {
+                pendingBenchmark.current(newResult)
+              }
             };  
           }
         
@@ -49,7 +53,8 @@ export function DataProvider({ children }) {
 
   return (
     <DataContext.Provider value={{ 
-      isDoneBenchmark, setDoneBenchmark,
+      pendingBenchmark,
+      dataAnalysis, setDataAnalysis,
       workerRef, tableWorkerRef,
       metrics, setMetrics,
       datasetArr, datasetTable,

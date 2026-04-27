@@ -13,9 +13,7 @@ export default async function performMemoryUsage(req, res) {
 
   if (req.method === "OPTIONS") return res.status(200).end()
 
-  // --- Rate Limiter ---
-  console.log("URL exists:", !!process.env.UPSTASH_REDIS_REST_URL)
-  console.log("TOKEN exists:", !!process.env.UPSTASH_REDIS_REST_TOKEN)
+  // --- Rate Limiter --
 
   try {
     const ip = req.headers["x-forwarded-for"] || "anonymous"

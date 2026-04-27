@@ -119,6 +119,7 @@ const ImplementationUsed = () => {
 const BenchmarkAnalysis = () => {
 
     const { metrics } = useData()
+    const { dataAnalysis } = useData()
 
     return (<>
         <Container fluid  className='px-0'>
@@ -129,10 +130,8 @@ const BenchmarkAnalysis = () => {
                     size={20}
                 />
                 <p className='my-2 second-font-color'> AI-driven insights into the current run </p>
-                <p className='mt-4 my-0 py-0'> "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+                <p className='mt-4 my-0 py-0'> 
+                    {!dataAnalysis.candidates ? dataAnalysis.onError : dataAnalysis.candidates[0].content.parts[0].functionCall.args.overallAnalysis }
                 </p>
                 <Table bordered hover responsive className='p-5 my-4'>
                     <thead>
